@@ -1,0 +1,6 @@
+risk_id,description,severity,likelihood,mitigation,owner,status
+R01,Missed support for one subgroup,4,3,Review false-negative gaps and adjust decision process,Learning safety lead,open
+R02,Unnecessary interventions interrupt productive learning,3,2,Add learner override and monitor false-positive burden,Instructional design lead,mitigated
+R03,Probability calibration may degrade after distribution shift,4,2,Monitor group calibration and recalibrate when triggers fire,Model owner,open
+R04,Accessibility barriers could make support unusable,4,2,Run accessibility review with assistive-technology testing,Accessibility owner,mitigated
+R05,Governance review could become a checkbox process,5,2,Require evidence links owners appeal path and rollback authority,Responsible AI Review Board,open
