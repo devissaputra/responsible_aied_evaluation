@@ -1,35 +1,50 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
-<title id="title">Responsible AIED Evaluation Toolkit workflow</title>
-<desc id="desc">Five-stage workflow diagram for this research prototype.</desc>
-<rect width="1200" height="300" rx="24" fill="#f7f8fa"/>
-<text x="50" y="48" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="700" fill="#17202a">Responsible AIED Evaluation Toolkit · baseline architecture</text>
-<text x="50" y="76" font-family="Arial, Helvetica, sans-serif" font-size="15" fill="#59636e">Current baseline, with each decision kept visible for review.</text>
-<rect x="50.0" y="120" width="190" height="92" rx="16" fill="#ffffff" stroke="#38598b" stroke-width="2"/>
-<circle cx="75.0" cy="145" r="14" fill="#38598b"/>
-<text x="75.0" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#ffffff">1</text>
-<text x="145.0" y="154" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#26323d">Model outputs</text>
-<line x1="248.0" y1="166.0" x2="269.5" y2="166.0" stroke="#8391a1" stroke-width="2"/>
-<path d="M 261.5 160.0 L 269.5 166.0 L 261.5 172.0" fill="none" stroke="#8391a1" stroke-width="2"/>
-<rect x="277.5" y="120" width="190" height="92" rx="16" fill="#ffffff" stroke="#38598b" stroke-width="2"/>
-<circle cx="302.5" cy="145" r="14" fill="#38598b"/>
-<text x="302.5" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#ffffff">2</text>
-<text x="372.5" y="154" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#26323d">Calibration + fairness</text>
-<line x1="475.5" y1="166.0" x2="497.0" y2="166.0" stroke="#8391a1" stroke-width="2"/>
-<path d="M 489.0 160.0 L 497.0 166.0 L 489.0 172.0" fill="none" stroke="#8391a1" stroke-width="2"/>
-<rect x="505.0" y="120" width="190" height="92" rx="16" fill="#ffffff" stroke="#38598b" stroke-width="2"/>
-<circle cx="530.0" cy="145" r="14" fill="#38598b"/>
-<text x="530.0" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#ffffff">3</text>
-<text x="600.0" y="154" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#26323d">Privacy review</text>
-<line x1="703.0" y1="166.0" x2="724.5" y2="166.0" stroke="#8391a1" stroke-width="2"/>
-<path d="M 716.5 160.0 L 724.5 166.0 L 716.5 172.0" fill="none" stroke="#8391a1" stroke-width="2"/>
-<rect x="732.5" y="120" width="190" height="92" rx="16" fill="#ffffff" stroke="#38598b" stroke-width="2"/>
-<circle cx="757.5" cy="145" r="14" fill="#38598b"/>
-<text x="757.5" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#ffffff">4</text>
-<text x="827.5" y="154" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#26323d">Deployment gate</text>
-<line x1="930.5" y1="166.0" x2="952.0" y2="166.0" stroke="#8391a1" stroke-width="2"/>
-<path d="M 944.0 160.0 L 952.0 166.0 L 944.0 172.0" fill="none" stroke="#8391a1" stroke-width="2"/>
-<rect x="960.0" y="120" width="190" height="92" rx="16" fill="#ffffff" stroke="#38598b" stroke-width="2"/>
-<circle cx="985.0" cy="145" r="14" fill="#38598b"/>
-<text x="985.0" y="150" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#ffffff">5</text>
-<text x="1055.0" y="154" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="600" fill="#26323d">Oversight check</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+<title id="title">Responsible AIED Evaluation Toolkit architecture</title>
+<desc id="desc">Model evidence flows through technical performance, calibration and fairness, uncertainty and shift analysis, governance and educational risk review, then into a transparent four-state decision report.</desc>
+<rect width="1200" height="360" rx="24" fill="#f7f8fa"/>
+<text x="48" y="48" font-family="Arial,Helvetica,sans-serif" font-size="25" font-weight="700" fill="#17202a">Responsible AIED Evaluation Toolkit · evidence-to-decision architecture</text>
+<text x="48" y="76" font-family="Arial,Helvetica,sans-serif" font-size="15" fill="#59636e">Technical metrics are only one part of review; missing governance or risk evidence can block progression.</text>
+
+<rect x="35" y="120" width="180" height="120" rx="16" fill="#fff" stroke="#38598b" stroke-width="2"/>
+<text x="125" y="151" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#26323d">Evaluation records</text>
+<text x="125" y="178" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">probability · outcome</text>
+<text x="125" y="198" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">group · intersection</text>
+
+<line x1="223" y1="180" x2="253" y2="180" stroke="#8391a1" stroke-width="2"/><path d="M245 174 L253 180 L245 186" fill="none" stroke="#8391a1" stroke-width="2"/>
+
+<rect x="261" y="105" width="205" height="150" rx="16" fill="#fff" stroke="#38598b" stroke-width="2"/>
+<text x="363" y="138" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#26323d">Technical evidence</text>
+<text x="363" y="165" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">confusion metrics</text>
+<text x="363" y="185" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">calibration · Brier</text>
+<text x="363" y="205" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">subgroup disparity</text>
+<text x="363" y="225" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">group calibration</text>
+
+<line x1="474" y1="180" x2="504" y2="180" stroke="#8391a1" stroke-width="2"/><path d="M496 174 L504 180 L496 186" fill="none" stroke="#8391a1" stroke-width="2"/>
+
+<rect x="512" y="105" width="200" height="150" rx="16" fill="#fff" stroke="#38598b" stroke-width="2"/>
+<text x="612" y="138" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#26323d">Uncertainty + shift</text>
+<text x="612" y="165" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">bootstrap intervals</text>
+<text x="612" y="185" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">threshold sensitivity</text>
+<text x="612" y="205" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">baseline vs shift</text>
+<text x="612" y="225" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">small-group warnings</text>
+
+<line x1="720" y1="180" x2="750" y2="180" stroke="#8391a1" stroke-width="2"/><path d="M742 174 L750 180 L742 186" fill="none" stroke="#8391a1" stroke-width="2"/>
+
+<rect x="758" y="105" width="200" height="150" rx="16" fill="#fff" stroke="#38598b" stroke-width="2"/>
+<text x="858" y="138" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#26323d">Governance + risk</text>
+<text x="858" y="165" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">privacy · accessibility</text>
+<text x="858" y="185" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">oversight · appeal</text>
+<text x="858" y="205" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">rollback · monitoring</text>
+<text x="858" y="225" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">educational risk register</text>
+
+<line x1="966" y1="180" x2="996" y2="180" stroke="#8391a1" stroke-width="2"/><path d="M988 174 L996 180 L988 186" fill="none" stroke="#8391a1" stroke-width="2"/>
+
+<rect x="1004" y="105" width="160" height="150" rx="16" fill="#fff" stroke="#38598b" stroke-width="2"/>
+<text x="1084" y="138" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#26323d">Decision report</text>
+<text x="1084" y="166" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">PASS</text>
+<text x="1084" y="186" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">CONDITIONAL</text>
+<text x="1084" y="206" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">BLOCK</text>
+<text x="1084" y="226" text-anchor="middle" font-family="Arial" font-size="13" fill="#59636e">NOT EVALUABLE</text>
+
+<text x="48" y="310" font-family="Arial" font-size="13" fill="#59636e">Decision thresholds are supplied by the study; the toolkit does not define universal fairness or safety cutoffs.</text>
 </svg>
