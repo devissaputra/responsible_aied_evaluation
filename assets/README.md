@@ -1,10 +1,10 @@
 # Visual assets
 
-The four visuals in this folder were created specifically for **Responsible AIED Evaluation Toolkit** and are stored locally with the repository. They use no stock-image service or external image host.
+All SVG files in this folder are original repository diagrams.
 
-- `architecture.svg`: overall system architecture.
-- `data_flow.svg`: data and reasoning flow through the prototype.
-- `demo_snapshot.svg`: example output from the bundled synthetic demo.
-- `evaluation_dashboard.svg`: the evaluation dimensions that should be checked in a real study.
+- `architecture.svg` shows the implemented evidence-to-decision architecture.
+- `data_flow.svg` separates technical metrics, uncertainty, educational risk, governance evidence, and review decisions.
+- `demo_snapshot.svg` summarizes the synthetic paths exercised by the demo without presenting empirical performance claims.
+- `evaluation_dashboard.svg` is an evaluation checklist, not a performance chart.
 
-The demo and dashboard graphics are illustrative and are not presented as empirical findings. All four visuals are covered by the repository's MIT License.
+The visuals intentionally avoid invented scores or decorative result bars.
