@@ -1,16 +1,24 @@
 {
   "research_bundle": true,
+  "status": "complete",
   "dataset": {
     "name": "Predict Students' Dropout and Academic Success",
     "uci_id": 697,
     "doi": "10.24432/C5MC89",
-    "n": 4424
+    "license": "CC BY 4.0",
+    "n": 4424,
+    "original_target_counts": {
+      "Graduate": 2209,
+      "Dropout": 1421,
+      "Enrolled": 794
+    },
+    "normalized_sha256": "995c72f2a50a226f7dd03ffc97fa19d702eefcbda88b7cc8bceed08b046d7c21",
+    "fingerprint_definition": "SHA-256 of the normalized feature table plus source target, preserving UCI row and column order."
   },
   "design": {
     "seed": 42,
-    "n_train": 3539,
-    "n_test": 885,
-    "target": "Dropout vs Enrolled/Graduate",
+    "primary_target": "Dropout by the dataset observation endpoint versus no recorded dropout by that endpoint (Enrolled or Graduate).",
+    "target_boundary": "Enrolled is not treated as academic success; it is only grouped with Graduate for the primary no-recorded-dropout endpoint and is removed in a dedicated sensitivity analysis.",
     "forbidden_post_enrollment_columns": [
       "Curricular units 1st sem (credited)",
       "Curricular units 1st sem (enrolled)",
@@ -25,290 +33,2334 @@
       "Curricular units 2nd sem (grade)",
       "Curricular units 2nd sem (without evaluations)"
     ],
-    "protected_excluded_from_prediction": [
+    "audit_only_fields": [
       "Gender",
-      "Nacionality"
+      "Nacionality",
+      "International",
+      "Educational special needs"
     ],
-    "n_model_features": 22
+    "audit_only_rationale": "Gender, nationality, international status, and special-needs status are held out of prediction and retained for subgroup evaluation. Exclusion of direct attributes does not prove the remaining feature set is proxy-free.",
+    "n_model_features": 20,
+    "model": "L2 logistic regression with train-only scaling and one-hot encoding",
+    "reference_threshold": 0.5,
+    "min_group_size": 30
   },
-  "overall": {
-    "roc_auc": 0.8318354385882684,
-    "brier": 0.1443224228759227,
-    "ece_10": 0.03166320511955012,
-    "confusion": {
-      "n": 885,
-      "tp": 152,
-      "tn": 552,
-      "fp": 49,
-      "fn": 132,
-      "accuracy": 0.7954802259887006,
-      "precision": 0.7562189054726368,
-      "recall_tpr": 0.5352112676056338,
-      "specificity_tnr": 0.9184692179700499,
-      "fpr": 0.08153078202995008,
-      "fnr": 0.4647887323943662,
-      "selection_rate": 0.2271186440677966
-    }
-  },
-  "gender_audit": {
-    "status": "scored",
-    "reason": null,
-    "group_field": "group",
-    "groups": {
-      "gender_code_0": {
-        "n": 564,
-        "tp": 75,
-        "tn": 394,
-        "fp": 32,
-        "fn": 63,
-        "accuracy": 0.8315602836879432,
-        "precision": 0.7009345794392523,
-        "recall_tpr": 0.5434782608695652,
-        "specificity_tnr": 0.9248826291079812,
-        "fpr": 0.07511737089201878,
-        "fnr": 0.45652173913043476,
-        "selection_rate": 0.18971631205673758,
-        "evaluable": true
+  "primary_split": {
+    "seed": 42,
+    "n_train": 3539,
+    "n_test": 885,
+    "overall": {
+      "prevalence": 0.32090395480225986,
+      "roc_auc": 0.8316010873895621,
+      "average_precision": 0.7432663032061297,
+      "brier": 0.1446565894918118,
+      "log_loss": 0.4501032086404027,
+      "ece_10": 0.041345473721991474,
+      "calibration": {
+        "intercept": -0.09009518994677156,
+        "slope": 0.9465802296377362,
+        "reference": {
+          "intercept": 0.0,
+          "slope": 1.0
+        }
       },
-      "gender_code_1": {
-        "n": 321,
-        "tp": 77,
-        "tn": 158,
-        "fp": 17,
-        "fn": 69,
-        "accuracy": 0.7320872274143302,
-        "precision": 0.8191489361702128,
-        "recall_tpr": 0.5273972602739726,
-        "specificity_tnr": 0.9028571428571428,
-        "fpr": 0.09714285714285714,
-        "fnr": 0.4726027397260274,
-        "selection_rate": 0.29283489096573206,
-        "evaluable": true
+      "balanced_accuracy_at_0_50": 0.7251763492770265,
+      "confusion_at_0_50": {
+        "n": 885,
+        "tp": 152,
+        "tn": 550,
+        "fp": 51,
+        "fn": 132,
+        "accuracy": 0.7932203389830509,
+        "precision": 0.7487684729064039,
+        "recall_tpr": 0.5352112676056338,
+        "specificity_tnr": 0.9151414309484193,
+        "fpr": 0.08485856905158069,
+        "fnr": 0.4647887323943662,
+        "selection_rate": 0.22937853107344633
+      },
+      "reference_threshold": 0.5,
+      "threshold_note": "0.50 is a descriptive reference threshold, not an optimized or ethically preferred intervention threshold.",
+      "sample_bootstrap": {
+        "accuracy": {
+          "status": "scored",
+          "metric": "accuracy",
+          "point": 0.7932203389830509,
+          "lower": 0.7661016949152543,
+          "upper": 0.8203389830508474,
+          "resamples_used": 1000,
+          "min_group_size": 1,
+          "resampling": "iid"
+        },
+        "brier": {
+          "status": "scored",
+          "metric": "brier",
+          "point": 0.1446565894918118,
+          "lower": 0.13072071137233096,
+          "upper": 0.1594941971012676,
+          "resamples_used": 1000,
+          "min_group_size": 1,
+          "resampling": "iid"
+        },
+        "ece": {
+          "status": "scored",
+          "metric": "ece",
+          "point": 0.010194358224536227,
+          "lower": 0.010233708989142129,
+          "upper": 0.043730738343681394,
+          "resamples_used": 1000,
+          "min_group_size": 1,
+          "resampling": "iid"
+        }
       }
     },
-    "evaluable_groups": [
-      "gender_code_0",
-      "gender_code_1"
-    ],
-    "min_group_size": 30,
-    "warnings": [],
-    "selection_rate_gap": 0.10311857890899448,
-    "tpr_gap": 0.016081000595592587,
-    "fpr_gap": 0.02202548625083836,
-    "fnr_gap": 0.016081000595592643,
-    "accuracy_gap": 0.09947305627361303,
-    "precision_gap": 0.11821435673096048,
-    "equalized_odds_gap": 0.02202548625083836
-  },
-  "gender_calibration": {
-    "status": "scored",
-    "reason": null,
-    "group_field": "group",
-    "groups": {
-      "gender_code_0": {
-        "n": 564,
-        "evaluable": true,
-        "ece": 0.04521707504962913,
-        "brier": 0.12632503743875947,
-        "bins": [
-          {
-            "bin": 0,
-            "lower": 0.0,
-            "upper": 0.2,
-            "count": 297,
-            "mean_probability": 0.10186303831839967,
-            "outcome_rate": 0.08754208754208755,
-            "absolute_gap": 0.014320950776312125
+    "gender": {
+      "fairness_metrics": {
+        "status": "scored",
+        "reason": null,
+        "group_field": "group",
+        "groups": {
+          "female": {
+            "n": 564,
+            "tp": 76,
+            "tn": 393,
+            "fp": 33,
+            "fn": 62,
+            "accuracy": 0.8315602836879432,
+            "precision": 0.6972477064220184,
+            "recall_tpr": 0.5507246376811594,
+            "specificity_tnr": 0.9225352112676056,
+            "fpr": 0.07746478873239436,
+            "fnr": 0.4492753623188406,
+            "selection_rate": 0.19326241134751773,
+            "evaluable": true
           },
-          {
-            "bin": 1,
-            "lower": 0.2,
-            "upper": 0.4,
-            "count": 126,
-            "mean_probability": 0.288407092014812,
-            "outcome_rate": 0.20634920634920634,
-            "absolute_gap": 0.08205788566560568
-          },
-          {
-            "bin": 2,
-            "lower": 0.4,
-            "upper": 0.6,
-            "count": 59,
-            "mean_probability": 0.4850514713621688,
-            "outcome_rate": 0.3389830508474576,
-            "absolute_gap": 0.1460684205147112
-          },
-          {
-            "bin": 3,
-            "lower": 0.6,
-            "upper": 0.8,
-            "count": 30,
-            "mean_probability": 0.701099753807483,
-            "outcome_rate": 0.6666666666666666,
-            "absolute_gap": 0.03443308714081639
-          },
-          {
-            "bin": 4,
-            "lower": 0.8,
-            "upper": 1.0,
-            "count": 52,
-            "mean_probability": 0.9088227870955261,
-            "outcome_rate": 0.8846153846153846,
-            "absolute_gap": 0.024207402480141527
+          "male": {
+            "n": 321,
+            "tp": 76,
+            "tn": 157,
+            "fp": 18,
+            "fn": 70,
+            "accuracy": 0.7258566978193146,
+            "precision": 0.8085106382978723,
+            "recall_tpr": 0.5205479452054794,
+            "specificity_tnr": 0.8971428571428571,
+            "fpr": 0.10285714285714286,
+            "fnr": 0.4794520547945205,
+            "selection_rate": 0.29283489096573206,
+            "evaluable": true
           }
-        ]
+        },
+        "evaluable_groups": [
+          "female",
+          "male"
+        ],
+        "min_group_size": 30,
+        "warnings": [],
+        "selection_rate_gap": 0.09957247961821433,
+        "tpr_gap": 0.03017669247568,
+        "fpr_gap": 0.025392354124748495,
+        "fnr_gap": 0.030176692475679945,
+        "accuracy_gap": 0.1057035858686286,
+        "precision_gap": 0.1112629318758539,
+        "equalized_odds_gap": 0.03017669247568
       },
-      "gender_code_1": {
-        "n": 321,
-        "evaluable": true,
-        "ece": 0.06042218025382414,
-        "brier": 0.17594399728888266,
-        "bins": [
-          {
-            "bin": 0,
-            "lower": 0.0,
-            "upper": 0.2,
-            "count": 101,
-            "mean_probability": 0.11448451503092666,
-            "outcome_rate": 0.1485148514851485,
-            "absolute_gap": 0.03403033645422185
+      "calibration": {
+        "status": "scored",
+        "reason": null,
+        "group_field": "group",
+        "groups": {
+          "female": {
+            "n": 564,
+            "evaluable": true,
+            "ece": 0.046424408947665086,
+            "brier": 0.12652423861151685,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 300,
+                "mean_probability": 0.10233604199227171,
+                "outcome_rate": 0.08666666666666667,
+                "absolute_gap": 0.015669375325605042
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 124,
+                "mean_probability": 0.29459434945087415,
+                "outcome_rate": 0.21774193548387097,
+                "absolute_gap": 0.07685241396700318
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 57,
+                "mean_probability": 0.48607079469248043,
+                "outcome_rate": 0.3333333333333333,
+                "absolute_gap": 0.15273746135914712
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 31,
+                "mean_probability": 0.7013435417967314,
+                "outcome_rate": 0.6451612903225806,
+                "absolute_gap": 0.05618225147415079
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 52,
+                "mean_probability": 0.9135609543023681,
+                "outcome_rate": 0.8846153846153846,
+                "absolute_gap": 0.028945569686983474
+              }
+            ]
           },
-          {
-            "bin": 1,
-            "lower": 0.2,
-            "upper": 0.4,
-            "count": 100,
-            "mean_probability": 0.285448558191828,
-            "outcome_rate": 0.39,
-            "absolute_gap": 0.104551441808172
-          },
-          {
-            "bin": 2,
-            "lower": 0.4,
-            "upper": 0.6,
-            "count": 43,
-            "mean_probability": 0.4833285122152363,
-            "outcome_rate": 0.5348837209302325,
-            "absolute_gap": 0.05155520871499619
-          },
-          {
-            "bin": 3,
-            "lower": 0.6,
-            "upper": 0.8,
-            "count": 24,
-            "mean_probability": 0.6992506238395446,
-            "outcome_rate": 0.7916666666666666,
-            "absolute_gap": 0.09241604282712201
-          },
-          {
-            "bin": 4,
-            "lower": 0.8,
-            "upper": 1.0,
-            "count": 53,
-            "mean_probability": 0.9232367415813552,
-            "outcome_rate": 0.9433962264150944,
-            "absolute_gap": 0.020159484833739194
+          "male": {
+            "n": 321,
+            "evaluable": true,
+            "ece": 0.06072542519193136,
+            "brier": 0.17651529944971292,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 99,
+                "mean_probability": 0.11363607791817786,
+                "outcome_rate": 0.15151515151515152,
+                "absolute_gap": 0.037879073596973664
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 102,
+                "mean_probability": 0.2833881442282889,
+                "outcome_rate": 0.38235294117647056,
+                "absolute_gap": 0.09896479694818167
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 43,
+                "mean_probability": 0.4828507307037817,
+                "outcome_rate": 0.5348837209302325,
+                "absolute_gap": 0.052032990226450804
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 24,
+                "mean_probability": 0.6940545511119476,
+                "outcome_rate": 0.7916666666666666,
+                "absolute_gap": 0.09761211555471905
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 53,
+                "mean_probability": 0.9232393479482188,
+                "outcome_rate": 0.9433962264150944,
+                "absolute_gap": 0.020156878466875527
+              }
+            ]
           }
-        ]
+        },
+        "evaluable_groups": [
+          "female",
+          "male"
+        ],
+        "min_group_size": 30,
+        "ece_gap": 0.014301016244266274,
+        "brier_gap": 0.04999106083819607,
+        "warnings": []
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7412429378531074,
+          "selection_rate": 0.392090395480226,
+          "selection_rate_gap": 0.1473288261417114,
+          "tpr_gap": 0.02352590827873735,
+          "fpr_gap": 0.06842387659289068,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7853107344632768,
+          "selection_rate": 0.2937853107344633,
+          "selection_rate_gap": 0.12560482534632464,
+          "tpr_gap": 0.014194957315862622,
+          "fpr_gap": 0.030892018779342723,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7932203389830509,
+          "selection_rate": 0.22937853107344633,
+          "selection_rate_gap": 0.09957247961821433,
+          "tpr_gap": 0.03017669247568,
+          "fpr_gap": 0.025392354124748495,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8033898305084746,
+          "selection_rate": 0.1807909604519774,
+          "selection_rate_gap": 0.09271226884072381,
+          "tpr_gap": 0.005658129839190007,
+          "fpr_gap": 0.005808182427900738,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7875706214689265,
+          "selection_rate": 0.14689265536723164,
+          "selection_rate_gap": 0.07257904155895804,
+          "tpr_gap": 0.015386142545165793,
+          "fpr_gap": 0.00040241448692152765,
+          "fairness_status": "scored"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts.",
+      "conditional_holdout_bootstrap": {
+        "selection_rate_gap": {
+          "status": "scored",
+          "metric": "selection_rate_gap",
+          "point": 0.09957247961821433,
+          "lower": 0.04176484721946047,
+          "upper": 0.1542851461523165,
+          "resamples_used": 1000,
+          "min_group_size": 30,
+          "resampling": "group-stratified"
+        },
+        "tpr_gap": {
+          "status": "scored",
+          "metric": "tpr_gap",
+          "point": 0.03017669247568,
+          "lower": 0.002798174305693496,
+          "upper": 0.1441214551449217,
+          "resamples_used": 1000,
+          "min_group_size": 30,
+          "resampling": "group-stratified"
+        },
+        "fpr_gap": {
+          "status": "scored",
+          "metric": "fpr_gap",
+          "point": 0.025392354124748495,
+          "lower": 0.001238726171494527,
+          "upper": 0.07619455160002116,
+          "resamples_used": 1000,
+          "min_group_size": 30,
+          "resampling": "group-stratified"
+        }
       }
     },
-    "evaluable_groups": [
-      "gender_code_0",
-      "gender_code_1"
+    "international": {
+      "fairness_metrics": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "domestic": {
+            "n": 859,
+            "tp": 145,
+            "tn": 534,
+            "fp": 49,
+            "fn": 131,
+            "accuracy": 0.7904540162980209,
+            "precision": 0.7474226804123711,
+            "recall_tpr": 0.5253623188405797,
+            "specificity_tnr": 0.9159519725557461,
+            "fpr": 0.08404802744425385,
+            "fnr": 0.4746376811594203,
+            "selection_rate": 0.22584400465657742,
+            "evaluable": true
+          },
+          "international": {
+            "n": 26,
+            "tp": 7,
+            "tn": 16,
+            "fp": 2,
+            "fn": 1,
+            "accuracy": 0.8846153846153846,
+            "precision": 0.7777777777777778,
+            "recall_tpr": 0.875,
+            "specificity_tnr": 0.8888888888888888,
+            "fpr": 0.1111111111111111,
+            "fnr": 0.125,
+            "selection_rate": 0.34615384615384615,
+            "evaluable": false
+          }
+        },
+        "evaluable_groups": [
+          "domestic"
+        ],
+        "min_group_size": 30,
+        "warnings": [
+          "group 'international' has n=26 below min_group_size=30; excluded from disparity gaps"
+        ],
+        "selection_rate_gap": null,
+        "tpr_gap": null,
+        "fpr_gap": null,
+        "fnr_gap": null,
+        "accuracy_gap": null,
+        "precision_gap": null,
+        "equalized_odds_gap": null
+      },
+      "calibration": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "domestic": {
+            "n": 859,
+            "evaluable": true,
+            "ece": 0.013599833599009577,
+            "brier": 0.14498787592191437,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 390,
+                "mean_probability": 0.10482318926433773,
+                "outcome_rate": 0.10256410256410256,
+                "absolute_gap": 0.002259086700235169
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 219,
+                "mean_probability": 0.28853856188102334,
+                "outcome_rate": 0.3013698630136986,
+                "absolute_gap": 0.012831301132675277
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 98,
+                "mean_probability": 0.48442671339996535,
+                "outcome_rate": 0.41836734693877553,
+                "absolute_gap": 0.06605936646118982
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 54,
+                "mean_probability": 0.6979580412172963,
+                "outcome_rate": 0.7222222222222222,
+                "absolute_gap": 0.02426418100492589
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 98,
+                "mean_probability": 0.9204803531932554,
+                "outcome_rate": 0.9183673469387755,
+                "absolute_gap": 0.0021130062544798545
+              }
+            ]
+          },
+          "international": {
+            "n": 26,
+            "evaluable": false,
+            "ece": 0.12535738207280442,
+            "brier": 0.13371139551265407,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 9,
+                "mean_probability": 0.11886005538771179,
+                "outcome_rate": 0.1111111111111111,
+                "absolute_gap": 0.0077489442766006805
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 7,
+                "mean_probability": 0.32076357017853885,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.32076357017853885
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 2,
+                "mean_probability": 0.4973994022686945,
+                "outcome_rate": 0.5,
+                "absolute_gap": 0.0026005977313054984
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 1,
+                "mean_probability": 0.7092247966514205,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.7092247966514205
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 7,
+                "mean_probability": 0.8899686360056721,
+                "outcome_rate": 0.8571428571428571,
+                "absolute_gap": 0.032825778862815014
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "domestic"
+        ],
+        "min_group_size": 30,
+        "ece_gap": null,
+        "brier_gap": null,
+        "warnings": [
+          "group 'international' has n=26 below min_group_size=30; excluded from calibration gaps"
+        ]
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7412429378531074,
+          "selection_rate": 0.392090395480226,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7853107344632768,
+          "selection_rate": 0.2937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7932203389830509,
+          "selection_rate": 0.22937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8033898305084746,
+          "selection_rate": 0.1807909604519774,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7875706214689265,
+          "selection_rate": 0.14689265536723164,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts.",
+      "conditional_holdout_bootstrap": {
+        "selection_rate_gap": {
+          "status": "not_evaluable",
+          "metric": "selection_rate_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "tpr_gap": {
+          "status": "not_evaluable",
+          "metric": "tpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "fpr_gap": {
+          "status": "not_evaluable",
+          "metric": "fpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        }
+      }
+    },
+    "nationality_group": {
+      "fairness_metrics": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "non_portuguese": {
+            "n": 26,
+            "tp": 7,
+            "tn": 16,
+            "fp": 2,
+            "fn": 1,
+            "accuracy": 0.8846153846153846,
+            "precision": 0.7777777777777778,
+            "recall_tpr": 0.875,
+            "specificity_tnr": 0.8888888888888888,
+            "fpr": 0.1111111111111111,
+            "fnr": 0.125,
+            "selection_rate": 0.34615384615384615,
+            "evaluable": false
+          },
+          "portuguese": {
+            "n": 859,
+            "tp": 145,
+            "tn": 534,
+            "fp": 49,
+            "fn": 131,
+            "accuracy": 0.7904540162980209,
+            "precision": 0.7474226804123711,
+            "recall_tpr": 0.5253623188405797,
+            "specificity_tnr": 0.9159519725557461,
+            "fpr": 0.08404802744425385,
+            "fnr": 0.4746376811594203,
+            "selection_rate": 0.22584400465657742,
+            "evaluable": true
+          }
+        },
+        "evaluable_groups": [
+          "portuguese"
+        ],
+        "min_group_size": 30,
+        "warnings": [
+          "group 'non_portuguese' has n=26 below min_group_size=30; excluded from disparity gaps"
+        ],
+        "selection_rate_gap": null,
+        "tpr_gap": null,
+        "fpr_gap": null,
+        "fnr_gap": null,
+        "accuracy_gap": null,
+        "precision_gap": null,
+        "equalized_odds_gap": null
+      },
+      "calibration": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "non_portuguese": {
+            "n": 26,
+            "evaluable": false,
+            "ece": 0.12535738207280442,
+            "brier": 0.13371139551265407,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 9,
+                "mean_probability": 0.11886005538771179,
+                "outcome_rate": 0.1111111111111111,
+                "absolute_gap": 0.0077489442766006805
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 7,
+                "mean_probability": 0.32076357017853885,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.32076357017853885
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 2,
+                "mean_probability": 0.4973994022686945,
+                "outcome_rate": 0.5,
+                "absolute_gap": 0.0026005977313054984
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 1,
+                "mean_probability": 0.7092247966514205,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.7092247966514205
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 7,
+                "mean_probability": 0.8899686360056721,
+                "outcome_rate": 0.8571428571428571,
+                "absolute_gap": 0.032825778862815014
+              }
+            ]
+          },
+          "portuguese": {
+            "n": 859,
+            "evaluable": true,
+            "ece": 0.013599833599009577,
+            "brier": 0.14498787592191437,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 390,
+                "mean_probability": 0.10482318926433773,
+                "outcome_rate": 0.10256410256410256,
+                "absolute_gap": 0.002259086700235169
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 219,
+                "mean_probability": 0.28853856188102334,
+                "outcome_rate": 0.3013698630136986,
+                "absolute_gap": 0.012831301132675277
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 98,
+                "mean_probability": 0.48442671339996535,
+                "outcome_rate": 0.41836734693877553,
+                "absolute_gap": 0.06605936646118982
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 54,
+                "mean_probability": 0.6979580412172963,
+                "outcome_rate": 0.7222222222222222,
+                "absolute_gap": 0.02426418100492589
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 98,
+                "mean_probability": 0.9204803531932554,
+                "outcome_rate": 0.9183673469387755,
+                "absolute_gap": 0.0021130062544798545
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "portuguese"
+        ],
+        "min_group_size": 30,
+        "ece_gap": null,
+        "brier_gap": null,
+        "warnings": [
+          "group 'non_portuguese' has n=26 below min_group_size=30; excluded from calibration gaps"
+        ]
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7412429378531074,
+          "selection_rate": 0.392090395480226,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7853107344632768,
+          "selection_rate": 0.2937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7932203389830509,
+          "selection_rate": 0.22937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8033898305084746,
+          "selection_rate": 0.1807909604519774,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7875706214689265,
+          "selection_rate": 0.14689265536723164,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts.",
+      "conditional_holdout_bootstrap": {
+        "selection_rate_gap": {
+          "status": "not_evaluable",
+          "metric": "selection_rate_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "tpr_gap": {
+          "status": "not_evaluable",
+          "metric": "tpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "fpr_gap": {
+          "status": "not_evaluable",
+          "metric": "fpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        }
+      }
+    },
+    "special_needs": {
+      "fairness_metrics": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "no_special_needs_flag": {
+            "n": 875,
+            "tp": 151,
+            "tn": 542,
+            "fp": 51,
+            "fn": 131,
+            "accuracy": 0.792,
+            "precision": 0.7475247524752475,
+            "recall_tpr": 0.5354609929078015,
+            "specificity_tnr": 0.9139966273187183,
+            "fpr": 0.08600337268128162,
+            "fnr": 0.4645390070921986,
+            "selection_rate": 0.23085714285714284,
+            "evaluable": true
+          },
+          "special_needs_flag": {
+            "n": 10,
+            "tp": 1,
+            "tn": 8,
+            "fp": 0,
+            "fn": 1,
+            "accuracy": 0.9,
+            "precision": 1.0,
+            "recall_tpr": 0.5,
+            "specificity_tnr": 1.0,
+            "fpr": 0.0,
+            "fnr": 0.5,
+            "selection_rate": 0.1,
+            "evaluable": false
+          }
+        },
+        "evaluable_groups": [
+          "no_special_needs_flag"
+        ],
+        "min_group_size": 30,
+        "warnings": [
+          "group 'special_needs_flag' has n=10 below min_group_size=30; excluded from disparity gaps"
+        ],
+        "selection_rate_gap": null,
+        "tpr_gap": null,
+        "fpr_gap": null,
+        "fnr_gap": null,
+        "accuracy_gap": null,
+        "precision_gap": null,
+        "equalized_odds_gap": null
+      },
+      "calibration": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "no_special_needs_flag": {
+            "n": 875,
+            "evaluable": true,
+            "ece": 0.008696052815462985,
+            "brier": 0.14526286059789428,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 392,
+                "mean_probability": 0.10530108043511584,
+                "outcome_rate": 0.10459183673469388,
+                "absolute_gap": 0.0007092437004219548
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 224,
+                "mean_probability": 0.28924011767897306,
+                "outcome_rate": 0.29017857142857145,
+                "absolute_gap": 0.0009384537495983891
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 100,
+                "mean_probability": 0.48468616717734003,
+                "outcome_rate": 0.42,
+                "absolute_gap": 0.06468616717734005
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 54,
+                "mean_probability": 0.6997159766603347,
+                "outcome_rate": 0.7037037037037037,
+                "absolute_gap": 0.003987727043369027
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 105,
+                "mean_probability": 0.9184462387140832,
+                "outcome_rate": 0.9142857142857143,
+                "absolute_gap": 0.004160524428368895
+              }
+            ]
+          },
+          "special_needs_flag": {
+            "n": 10,
+            "evaluable": false,
+            "ece": 0.14129608151844295,
+            "brier": 0.09160786770959674,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 7,
+                "mean_probability": 0.09610868300224595,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.09610868300224595
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 2,
+                "mean_probability": 0.3227518415519746,
+                "outcome_rate": 0.5,
+                "absolute_gap": 0.17724815844802538
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 1,
+                "mean_probability": 0.6142962827273429,
+                "outcome_rate": 1.0,
+                "absolute_gap": 0.38570371727265707
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "no_special_needs_flag"
+        ],
+        "min_group_size": 30,
+        "ece_gap": null,
+        "brier_gap": null,
+        "warnings": [
+          "group 'special_needs_flag' has n=10 below min_group_size=30; excluded from calibration gaps"
+        ]
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7412429378531074,
+          "selection_rate": 0.392090395480226,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7853107344632768,
+          "selection_rate": 0.2937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7932203389830509,
+          "selection_rate": 0.22937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8033898305084746,
+          "selection_rate": 0.1807909604519774,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7875706214689265,
+          "selection_rate": 0.14689265536723164,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts.",
+      "conditional_holdout_bootstrap": {
+        "selection_rate_gap": {
+          "status": "not_evaluable",
+          "metric": "selection_rate_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "tpr_gap": {
+          "status": "not_evaluable",
+          "metric": "tpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        },
+        "fpr_gap": {
+          "status": "not_evaluable",
+          "metric": "fpr_gap",
+          "point": null,
+          "lower": null,
+          "upper": null,
+          "resampling": "group-stratified"
+        }
+      }
+    },
+    "intersectional_gender_international": {
+      "fairness_metrics": {
+        "status": "not_evaluable",
+        "reason": "incomplete_intersectional_coverage",
+        "group_field": "group",
+        "groups": {
+          "female__domestic": {
+            "n": 542,
+            "tp": 69,
+            "tn": 381,
+            "fp": 31,
+            "fn": 61,
+            "accuracy": 0.8302583025830258,
+            "precision": 0.69,
+            "recall_tpr": 0.5307692307692308,
+            "specificity_tnr": 0.9247572815533981,
+            "fpr": 0.07524271844660194,
+            "fnr": 0.46923076923076923,
+            "selection_rate": 0.18450184501845018,
+            "evaluable": true
+          },
+          "female__international": {
+            "n": 22,
+            "tp": 7,
+            "tn": 12,
+            "fp": 2,
+            "fn": 1,
+            "accuracy": 0.8636363636363636,
+            "precision": 0.7777777777777778,
+            "recall_tpr": 0.875,
+            "specificity_tnr": 0.8571428571428571,
+            "fpr": 0.14285714285714285,
+            "fnr": 0.125,
+            "selection_rate": 0.4090909090909091,
+            "evaluable": false
+          },
+          "male__domestic": {
+            "n": 317,
+            "tp": 76,
+            "tn": 153,
+            "fp": 18,
+            "fn": 70,
+            "accuracy": 0.722397476340694,
+            "precision": 0.8085106382978723,
+            "recall_tpr": 0.5205479452054794,
+            "specificity_tnr": 0.8947368421052632,
+            "fpr": 0.10526315789473684,
+            "fnr": 0.4794520547945205,
+            "selection_rate": 0.29652996845425866,
+            "evaluable": true
+          },
+          "male__international": {
+            "n": 4,
+            "tp": 0,
+            "tn": 4,
+            "fp": 0,
+            "fn": 0,
+            "accuracy": 1.0,
+            "precision": null,
+            "recall_tpr": null,
+            "specificity_tnr": 1.0,
+            "fpr": 0.0,
+            "fnr": null,
+            "selection_rate": 0.0,
+            "evaluable": false
+          }
+        },
+        "evaluable_groups": [
+          "female__domestic",
+          "male__domestic"
+        ],
+        "min_group_size": 30,
+        "warnings": [
+          "group 'female__international' has n=22 below min_group_size=30; excluded from disparity gaps",
+          "group 'male__international' has n=4 below min_group_size=30; excluded from disparity gaps"
+        ],
+        "selection_rate_gap": null,
+        "tpr_gap": null,
+        "fpr_gap": null,
+        "fnr_gap": null,
+        "accuracy_gap": null,
+        "precision_gap": null,
+        "equalized_odds_gap": null
+      },
+      "calibration": {
+        "status": "not_evaluable",
+        "reason": "incomplete_intersectional_coverage",
+        "group_field": "group",
+        "groups": {
+          "female__domestic": {
+            "n": 542,
+            "evaluable": true,
+            "ece": 0.04357668019553367,
+            "brier": 0.12548013929319468,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 293,
+                "mean_probability": 0.10196472117450751,
+                "outcome_rate": 0.08532423208191127,
+                "absolute_gap": 0.016640489092596245
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 119,
+                "mean_probability": 0.29179703107717525,
+                "outcome_rate": 0.226890756302521,
+                "absolute_gap": 0.06490627477465424
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 55,
+                "mean_probability": 0.48565884532607273,
+                "outcome_rate": 0.32727272727272727,
+                "absolute_gap": 0.15838611805334546
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 30,
+                "mean_probability": 0.7010808333015751,
+                "outcome_rate": 0.6666666666666666,
+                "absolute_gap": 0.03441416663490848
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 45,
+                "mean_probability": 0.9172308704818543,
+                "outcome_rate": 0.8888888888888888,
+                "absolute_gap": 0.028341981592965415
+              }
+            ]
+          },
+          "female__international": {
+            "n": 22,
+            "evaluable": false,
+            "ece": 0.1329504447421569,
+            "brier": 0.15224704909018186,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 7,
+                "mean_probability": 0.11787847050725928,
+                "outcome_rate": 0.14285714285714285,
+                "absolute_gap": 0.024978672349883574
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 5,
+                "mean_probability": 0.361170526744906,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.361170526744906
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 2,
+                "mean_probability": 0.4973994022686945,
+                "outcome_rate": 0.5,
+                "absolute_gap": 0.0026005977313054984
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 1,
+                "mean_probability": 0.7092247966514205,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.7092247966514205
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 7,
+                "mean_probability": 0.8899686360056721,
+                "outcome_rate": 0.8571428571428571,
+                "absolute_gap": 0.032825778862815014
+              }
+            ]
+          },
+          "male__domestic": {
+            "n": 317,
+            "evaluable": true,
+            "ece": 0.06364966892452302,
+            "brier": 0.1783417978549301,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 97,
+                "mean_probability": 0.11345753102021666,
+                "outcome_rate": 0.15463917525773196,
+                "absolute_gap": 0.0411816442375153
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 100,
+                "mean_probability": 0.28466098353760233,
+                "outcome_rate": 0.39,
+                "absolute_gap": 0.10533901646239768
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 43,
+                "mean_probability": 0.4828507307037817,
+                "outcome_rate": 0.5348837209302325,
+                "absolute_gap": 0.052032990226450804
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 24,
+                "mean_probability": 0.6940545511119476,
+                "outcome_rate": 0.7916666666666666,
+                "absolute_gap": 0.09761211555471905
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 53,
+                "mean_probability": 0.9232393479482188,
+                "outcome_rate": 0.9433962264150944,
+                "absolute_gap": 0.020156878466875527
+              }
+            ]
+          },
+          "male__international": {
+            "n": 4,
+            "evaluable": false,
+            "ece": 0.17102089061595827,
+            "brier": 0.031765300836251203,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 2,
+                "mean_probability": 0.12229560246929566,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.12229560246929566
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 2,
+                "mean_probability": 0.2197461787626209,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.2197461787626209
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "female__domestic",
+          "male__domestic"
+        ],
+        "min_group_size": 30,
+        "ece_gap": null,
+        "brier_gap": null,
+        "warnings": [
+          "group 'female__international' has n=22 below min_group_size=30; excluded from calibration gaps",
+          "group 'male__international' has n=4 below min_group_size=30; excluded from calibration gaps"
+        ]
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7412429378531074,
+          "selection_rate": 0.392090395480226,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7853107344632768,
+          "selection_rate": 0.2937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7932203389830509,
+          "selection_rate": 0.22937853107344633,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.8033898305084746,
+          "selection_rate": 0.1807909604519774,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7875706214689265,
+          "selection_rate": 0.14689265536723164,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        }
+      ],
+      "interpretation": "At least one observed gender x international intersection is below min_group_size=30; cell-level metrics are retained but no overall intersectional disparity gap is scored.",
+      "definition": "gender x international-status intersection",
+      "coverage": {
+        "observed_groups": [
+          "female__domestic",
+          "female__international",
+          "male__domestic",
+          "male__international"
+        ],
+        "evaluable_groups": [
+          "female__domestic",
+          "male__domestic"
+        ],
+        "complete": false
+      }
+    }
+  },
+  "repeated_split_robustness": {
+    "seeds": [
+      11,
+      23,
+      42,
+      73,
+      101,
+      131,
+      173,
+      211,
+      257,
+      307
     ],
-    "min_group_size": 30,
-    "ece_gap": 0.015205105204195012,
-    "brier_gap": 0.049618959850123184,
-    "warnings": []
+    "rows": [
+      {
+        "seed": 11,
+        "roc_auc": 0.8235628412739331,
+        "average_precision": 0.7436882368962642,
+        "brier": 0.14724044215922794,
+        "ece_10": 0.026913183670328966,
+        "gender_selection_rate_gap": 0.1683241758241758,
+        "gender_tpr_gap": 0.04420739270652441,
+        "gender_fpr_gap": 0.12144060111413396,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 23,
+        "roc_auc": 0.8245881277682736,
+        "average_precision": 0.7426214512783763,
+        "brier": 0.14620797795849655,
+        "ece_10": 0.033054989902721335,
+        "gender_selection_rate_gap": 0.17874984769099553,
+        "gender_tpr_gap": 0.16237663046173684,
+        "gender_fpr_gap": 0.06390947485855446,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 42,
+        "roc_auc": 0.8316010873895621,
+        "average_precision": 0.7432663032061297,
+        "brier": 0.1446565894918118,
+        "ece_10": 0.041345473721991474,
+        "gender_selection_rate_gap": 0.09957247961821433,
+        "gender_tpr_gap": 0.03017669247568,
+        "gender_fpr_gap": 0.025392354124748495,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 73,
+        "roc_auc": 0.789423730402381,
+        "average_precision": 0.6885031545683332,
+        "brier": 0.16139496060029324,
+        "ece_10": 0.045100485850242976,
+        "gender_selection_rate_gap": 0.12794202309593958,
+        "gender_tpr_gap": 0.03947368421052633,
+        "gender_fpr_gap": 0.07916767611510406,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 101,
+        "roc_auc": 0.808183543858827,
+        "average_precision": 0.7059614081123602,
+        "brier": 0.1556767736873786,
+        "ece_10": 0.033518357486346795,
+        "gender_selection_rate_gap": 0.13551728413151046,
+        "gender_tpr_gap": 0.014084507042253502,
+        "gender_fpr_gap": 0.06616624965248818,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 131,
+        "roc_auc": 0.8251271355252983,
+        "average_precision": 0.7543833620169679,
+        "brier": 0.14514607575702682,
+        "ece_10": 0.025089636340341264,
+        "gender_selection_rate_gap": 0.13620780442990468,
+        "gender_tpr_gap": 0.008040500297796238,
+        "gender_fpr_gap": 0.08265355734428176,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 173,
+        "roc_auc": 0.8217231843640881,
+        "average_precision": 0.7378553316475308,
+        "brier": 0.14853559603090116,
+        "ece_10": 0.02707580850506445,
+        "gender_selection_rate_gap": 0.12207181152810839,
+        "gender_tpr_gap": 0.07698412698412699,
+        "gender_fpr_gap": 0.003320323087764948,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 211,
+        "roc_auc": 0.8112594033418481,
+        "average_precision": 0.735042878933321,
+        "brier": 0.14972688738389206,
+        "ece_10": 0.04315575787867599,
+        "gender_selection_rate_gap": 0.13693831845812696,
+        "gender_tpr_gap": 0.01839423315933386,
+        "gender_fpr_gap": 0.049078926043973854,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 257,
+        "roc_auc": 0.8049905087764525,
+        "average_precision": 0.7147855914812732,
+        "brier": 0.15434980005942026,
+        "ece_10": 0.046639308619782036,
+        "gender_selection_rate_gap": 0.1047124824684432,
+        "gender_tpr_gap": 0.027579365079365092,
+        "gender_fpr_gap": 0.050689231609116966,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      },
+      {
+        "seed": 307,
+        "roc_auc": 0.7919430057884747,
+        "average_precision": 0.7024300590099262,
+        "brier": 0.16177311616202394,
+        "ece_10": 0.0551395903763367,
+        "gender_selection_rate_gap": 0.15717618794612948,
+        "gender_tpr_gap": 0.002388059701492473,
+        "gender_fpr_gap": 0.12489641969311656,
+        "international_selection_rate_gap": null,
+        "international_tpr_gap": null,
+        "international_fpr_gap": null
+      }
+    ],
+    "summary": {
+      "roc_auc": {
+        "n": 10,
+        "mean": 0.8132402568489138,
+        "sd": 0.014545179692181753,
+        "min": 0.789423730402381,
+        "max": 0.8316010873895621
+      },
+      "average_precision": {
+        "n": 10,
+        "mean": 0.7268537777150482,
+        "sd": 0.02210274913962998,
+        "min": 0.6885031545683332,
+        "max": 0.7543833620169679
+      },
+      "brier": {
+        "n": 10,
+        "mean": 0.15147082192904723,
+        "sd": 0.0064488673973107005,
+        "min": 0.1446565894918118,
+        "max": 0.16177311616202394
+      },
+      "ece_10": {
+        "n": 10,
+        "mean": 0.0377032592351832,
+        "sd": 0.010050897054336715,
+        "min": 0.025089636340341264,
+        "max": 0.0551395903763367
+      },
+      "gender_selection_rate_gap": {
+        "n": 10,
+        "mean": 0.13672124151915485,
+        "sd": 0.025563832789755596,
+        "min": 0.09957247961821433,
+        "max": 0.17874984769099553
+      },
+      "gender_tpr_gap": {
+        "n": 10,
+        "mean": 0.042370519211883576,
+        "sd": 0.04729447939723991,
+        "min": 0.002388059701492473,
+        "max": 0.16237663046173684
+      },
+      "gender_fpr_gap": {
+        "n": 10,
+        "mean": 0.06667148136432834,
+        "sd": 0.03813941007386212,
+        "min": 0.003320323087764948,
+        "max": 0.12489641969311656
+      }
+    },
+    "interpretation": "Repeated stratified 80/20 splits quantify split/training sensitivity. They are robustness evidence, not an external-validation substitute."
   },
-  "threshold_sensitivity": [
-    {
-      "threshold": 0.3,
-      "accuracy": 0.7457627118644068,
-      "selection_rate": 0.392090395480226,
-      "selection_rate_gap": 0.15221714058460928,
-      "tpr_gap": 0.023128846535636294,
-      "fpr_gap": 0.07311871227364186,
-      "fairness_status": "scored"
-    },
-    {
-      "threshold": 0.4,
-      "accuracy": 0.7864406779661017,
-      "selection_rate": 0.29491525423728815,
-      "selection_rate_gap": 0.12383177570093457,
-      "tpr_gap": 0.006948580504268387,
-      "fpr_gap": 0.030892018779342723,
-      "fairness_status": "scored"
-    },
-    {
-      "threshold": 0.5,
-      "accuracy": 0.7954802259887006,
-      "selection_rate": 0.2271186440677966,
-      "selection_rate_gap": 0.10311857890899448,
-      "tpr_gap": 0.016081000595592587,
-      "fpr_gap": 0.02202548625083836,
-      "fairness_status": "scored"
-    },
-    {
-      "threshold": 0.6,
-      "accuracy": 0.8045197740112995,
-      "selection_rate": 0.17966101694915254,
-      "selection_rate_gap": 0.09448531848611388,
-      "tpr_gap": 0.005658129839190007,
-      "fpr_gap": 0.008155600268276324,
-      "fairness_status": "scored"
-    },
-    {
-      "threshold": 0.7,
-      "accuracy": 0.7898305084745763,
-      "selection_rate": 0.14689265536723164,
-      "selection_rate_gap": 0.07746735600185589,
-      "tpr_gap": 0.00853682747667267,
-      "fpr_gap": 0.0027498323272971137,
-      "fairness_status": "scored"
-    }
-  ],
-  "bootstrap_uncertainty": {
-    "accuracy": {
-      "status": "scored",
-      "metric": "accuracy",
-      "point": 0.7954802259887006,
-      "lower": 0.768361581920904,
-      "upper": 0.8225988700564971,
-      "resamples_used": 1000,
-      "min_group_size": 1,
-      "resampling": "iid"
-    },
-    "selection_rate_gap": {
-      "status": "scored",
-      "metric": "selection_rate_gap",
-      "point": 0.10311857890899448,
-      "lower": 0.04236421499629414,
-      "upper": 0.16407780536688457,
-      "resamples_used": 1000,
-      "min_group_size": 1,
-      "resampling": "iid"
-    },
-    "tpr_gap": {
-      "status": "scored",
-      "metric": "tpr_gap",
-      "point": 0.016081000595592587,
-      "lower": 0.0023846430464078126,
-      "upper": 0.137040752676776,
-      "resamples_used": 1000,
-      "min_group_size": 1,
-      "resampling": "iid"
-    },
-    "fpr_gap": {
-      "status": "scored",
-      "metric": "fpr_gap",
-      "point": 0.02202548625083836,
-      "lower": 0.0009611117945683871,
-      "upper": 0.07140880766206126,
-      "resamples_used": 1000,
-      "min_group_size": 1,
-      "resampling": "iid"
+  "training_refit_bootstrap": {
+    "method": "Stratified bootstrap of the original training partition with model and preprocessing refit in every resample; evaluated on the fixed untouched holdout.",
+    "iterations": 200,
+    "seed": 20260925,
+    "summary": {
+      "roc_auc": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.8221479459117433,
+        "lower_95": 0.812102188840196,
+        "upper_95": 0.8324267359565045
+      },
+      "average_precision": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.7327477936086932,
+        "lower_95": 0.7201742169187505,
+        "upper_95": 0.7468559141660104
+      },
+      "brier": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.14901979310080915,
+        "lower_95": 0.1440276056677729,
+        "upper_95": 0.15368480149011138
+      },
+      "ece_10": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.035659354911104925,
+        "lower_95": 0.025010187934046094,
+        "upper_95": 0.05109098362544624
+      },
+      "gender_selection_rate_gap": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.10266288857957179,
+        "lower_95": 0.07202102803738315,
+        "upper_95": 0.1357277788824816
+      },
+      "gender_tpr_gap": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.019356759976176363,
+        "lower_95": 0.001985308715505285,
+        "upper_95": 0.058400337502481574
+      },
+      "gender_fpr_gap": {
+        "status": "scored",
+        "n_valid": 200,
+        "median": 0.02222669349429912,
+        "lower_95": 0.0004946344735077192,
+        "upper_95": 0.05805700871898054
+      },
+      "international_selection_rate_gap": {
+        "status": "not_evaluable",
+        "n_valid": 0,
+        "median": null,
+        "lower_95": null,
+        "upper_95": null
+      },
+      "international_tpr_gap": {
+        "status": "not_evaluable",
+        "n_valid": 0,
+        "median": null,
+        "lower_95": null,
+        "upper_95": null
+      },
+      "international_fpr_gap": {
+        "status": "not_evaluable",
+        "n_valid": 0,
+        "median": null,
+        "lower_95": null,
+        "upper_95": null
+      }
     }
   },
-  "interpretation_boundary": "measurement audit only; not fairness certification or deployment approval"
+  "target_sensitivity": {
+    "definition": "Dropout versus Graduate only; Enrolled cases excluded as unresolved endpoint sensitivity.",
+    "n": 3630,
+    "class_counts": {
+      "dropout": 1421,
+      "graduate": 2209
+    },
+    "forbidden_post_enrollment_columns": [
+      "Curricular units 1st sem (credited)",
+      "Curricular units 1st sem (enrolled)",
+      "Curricular units 1st sem (evaluations)",
+      "Curricular units 1st sem (approved)",
+      "Curricular units 1st sem (grade)",
+      "Curricular units 1st sem (without evaluations)",
+      "Curricular units 2nd sem (credited)",
+      "Curricular units 2nd sem (enrolled)",
+      "Curricular units 2nd sem (evaluations)",
+      "Curricular units 2nd sem (approved)",
+      "Curricular units 2nd sem (grade)",
+      "Curricular units 2nd sem (without evaluations)"
+    ],
+    "audit_only_fields": [
+      "Gender",
+      "Nacionality",
+      "International",
+      "Educational special needs"
+    ],
+    "overall": {
+      "prevalence": 0.39118457300275483,
+      "roc_auc": 0.8478506787330315,
+      "average_precision": 0.8161467598851678,
+      "brier": 0.1503762528907323,
+      "log_loss": 0.45640210683780164,
+      "ece_10": 0.04328432744198979,
+      "calibration": {
+        "intercept": -0.15108272291381938,
+        "slope": 0.9610186242719029,
+        "reference": {
+          "intercept": 0.0,
+          "slope": 1.0
+        }
+      },
+      "balanced_accuracy_at_0_50": 0.7563252820087949,
+      "confusion_at_0_50": {
+        "n": 726,
+        "tp": 188,
+        "tn": 376,
+        "fp": 66,
+        "fn": 96,
+        "accuracy": 0.7768595041322314,
+        "precision": 0.7401574803149606,
+        "recall_tpr": 0.6619718309859155,
+        "specificity_tnr": 0.8506787330316742,
+        "fpr": 0.1493212669683258,
+        "fnr": 0.3380281690140845,
+        "selection_rate": 0.349862258953168
+      },
+      "reference_threshold": 0.5,
+      "threshold_note": "0.50 is a descriptive reference threshold, not an optimized or ethically preferred intervention threshold."
+    },
+    "gender": {
+      "fairness_metrics": {
+        "status": "scored",
+        "reason": null,
+        "group_field": "group",
+        "groups": {
+          "female": {
+            "n": 438,
+            "tp": 83,
+            "tn": 270,
+            "fp": 38,
+            "fn": 47,
+            "accuracy": 0.8059360730593608,
+            "precision": 0.6859504132231405,
+            "recall_tpr": 0.6384615384615384,
+            "specificity_tnr": 0.8766233766233766,
+            "fpr": 0.12337662337662338,
+            "fnr": 0.36153846153846153,
+            "selection_rate": 0.2762557077625571,
+            "evaluable": true
+          },
+          "male": {
+            "n": 288,
+            "tp": 105,
+            "tn": 106,
+            "fp": 28,
+            "fn": 49,
+            "accuracy": 0.7326388888888888,
+            "precision": 0.7894736842105263,
+            "recall_tpr": 0.6818181818181818,
+            "specificity_tnr": 0.7910447761194029,
+            "fpr": 0.208955223880597,
+            "fnr": 0.3181818181818182,
+            "selection_rate": 0.4618055555555556,
+            "evaluable": true
+          }
+        },
+        "evaluable_groups": [
+          "female",
+          "male"
+        ],
+        "min_group_size": 30,
+        "warnings": [],
+        "selection_rate_gap": 0.1855498477929985,
+        "tpr_gap": 0.043356643356643354,
+        "fpr_gap": 0.08557860050397363,
+        "fnr_gap": 0.043356643356643354,
+        "accuracy_gap": 0.07329718417047193,
+        "precision_gap": 0.10352327098738578,
+        "equalized_odds_gap": 0.08557860050397363
+      },
+      "calibration": {
+        "status": "scored",
+        "reason": null,
+        "group_field": "group",
+        "groups": {
+          "female": {
+            "n": 438,
+            "evaluable": true,
+            "ece": 0.05386672964311362,
+            "brier": 0.13663800936660955,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 182,
+                "mean_probability": 0.10184652309422863,
+                "outcome_rate": 0.07142857142857142,
+                "absolute_gap": 0.03041795166565721
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 104,
+                "mean_probability": 0.2947935416750599,
+                "outcome_rate": 0.25961538461538464,
+                "absolute_gap": 0.03517815705967525
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 66,
+                "mean_probability": 0.5020431661365202,
+                "outcome_rate": 0.3181818181818182,
+                "absolute_gap": 0.18386134795470205
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 38,
+                "mean_probability": 0.709037713481994,
+                "outcome_rate": 0.6842105263157895,
+                "absolute_gap": 0.024827187166204467
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 48,
+                "mean_probability": 0.9233489576875381,
+                "outcome_rate": 0.8958333333333334,
+                "absolute_gap": 0.027515624354204737
+              }
+            ]
+          },
+          "male": {
+            "n": 288,
+            "evaluable": true,
+            "ece": 0.05383755407524065,
+            "brier": 0.17126983158366893,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 66,
+                "mean_probability": 0.11825095553391814,
+                "outcome_rate": 0.18181818181818182,
+                "absolute_gap": 0.06356722628426369
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 63,
+                "mean_probability": 0.2941538519863757,
+                "outcome_rate": 0.38095238095238093,
+                "absolute_gap": 0.0867985289660052
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 45,
+                "mean_probability": 0.4897683160672586,
+                "outcome_rate": 0.4222222222222222,
+                "absolute_gap": 0.0675460938450364
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 39,
+                "mean_probability": 0.6785134831823657,
+                "outcome_rate": 0.7435897435897436,
+                "absolute_gap": 0.0650762604073779
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 75,
+                "mean_probability": 0.9368523058018027,
+                "outcome_rate": 0.9333333333333333,
+                "absolute_gap": 0.003518972468469328
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "female",
+          "male"
+        ],
+        "min_group_size": 30,
+        "ece_gap": 2.917556787297021e-05,
+        "brier_gap": 0.03463182221705938,
+        "warnings": []
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7245179063360881,
+          "selection_rate": 0.5316804407713499,
+          "selection_rate_gap": 0.18921232876712335,
+          "tpr_gap": 0.02227772227772229,
+          "fpr_gap": 0.12017832913355303,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7534435261707989,
+          "selection_rate": 0.4283746556473829,
+          "selection_rate_gap": 0.20505136986301375,
+          "tpr_gap": 0.07392607392607398,
+          "fpr_gap": 0.10467144795503003,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7768595041322314,
+          "selection_rate": 0.349862258953168,
+          "selection_rate_gap": 0.1855498477929985,
+          "tpr_gap": 0.043356643356643354,
+          "fpr_gap": 0.08557860050397363,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.7961432506887053,
+          "selection_rate": 0.27548209366391185,
+          "selection_rate_gap": 0.199486301369863,
+          "tpr_gap": 0.11208791208791213,
+          "fpr_gap": 0.0567454933126575,
+          "fairness_status": "scored"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7727272727272727,
+          "selection_rate": 0.22176308539944903,
+          "selection_rate_gap": 0.16191019786910196,
+          "tpr_gap": 0.08631368631368624,
+          "fpr_gap": 0.03891257995735607,
+          "fairness_status": "scored"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts."
+    },
+    "international": {
+      "fairness_metrics": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "domestic": {
+            "n": 708,
+            "tp": 182,
+            "tn": 367,
+            "fp": 65,
+            "fn": 94,
+            "accuracy": 0.7754237288135594,
+            "precision": 0.7368421052631579,
+            "recall_tpr": 0.6594202898550725,
+            "specificity_tnr": 0.8495370370370371,
+            "fpr": 0.15046296296296297,
+            "fnr": 0.34057971014492755,
+            "selection_rate": 0.3488700564971751,
+            "evaluable": true
+          },
+          "international": {
+            "n": 18,
+            "tp": 6,
+            "tn": 9,
+            "fp": 1,
+            "fn": 2,
+            "accuracy": 0.8333333333333334,
+            "precision": 0.8571428571428571,
+            "recall_tpr": 0.75,
+            "specificity_tnr": 0.9,
+            "fpr": 0.1,
+            "fnr": 0.25,
+            "selection_rate": 0.3888888888888889,
+            "evaluable": false
+          }
+        },
+        "evaluable_groups": [
+          "domestic"
+        ],
+        "min_group_size": 30,
+        "warnings": [
+          "group 'international' has n=18 below min_group_size=30; excluded from disparity gaps"
+        ],
+        "selection_rate_gap": null,
+        "tpr_gap": null,
+        "fpr_gap": null,
+        "fnr_gap": null,
+        "accuracy_gap": null,
+        "precision_gap": null,
+        "equalized_odds_gap": null
+      },
+      "calibration": {
+        "status": "not_evaluable",
+        "reason": "fewer_than_two_evaluable_groups",
+        "group_field": "group",
+        "groups": {
+          "domestic": {
+            "n": 708,
+            "evaluable": true,
+            "ece": 0.02656749713903158,
+            "brier": 0.15104091120778884,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 244,
+                "mean_probability": 0.1062884319885344,
+                "outcome_rate": 0.10245901639344263,
+                "absolute_gap": 0.00382941559509177
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 163,
+                "mean_probability": 0.29426335467078885,
+                "outcome_rate": 0.3006134969325153,
+                "absolute_gap": 0.006350142261726477
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 106,
+                "mean_probability": 0.4976716280086452,
+                "outcome_rate": 0.36792452830188677,
+                "absolute_gap": 0.1297470997067584
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 76,
+                "mean_probability": 0.6927649828955134,
+                "outcome_rate": 0.7105263157894737,
+                "absolute_gap": 0.017761332893960313
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 119,
+                "mean_probability": 0.9305654076614552,
+                "outcome_rate": 0.9159663865546218,
+                "absolute_gap": 0.01459902110683342
+              }
+            ]
+          },
+          "international": {
+            "n": 18,
+            "evaluable": false,
+            "ece": 0.1666377575280155,
+            "brier": 0.12423302575317642,
+            "bins": [
+              {
+                "bin": 0,
+                "lower": 0.0,
+                "upper": 0.2,
+                "count": 4,
+                "mean_probability": 0.10156321579645375,
+                "outcome_rate": 0.0,
+                "absolute_gap": 0.10156321579645375
+              },
+              {
+                "bin": 1,
+                "lower": 0.2,
+                "upper": 0.4,
+                "count": 4,
+                "mean_probability": 0.3063235495023271,
+                "outcome_rate": 0.5,
+                "absolute_gap": 0.1936764504976729
+              },
+              {
+                "bin": 2,
+                "lower": 0.4,
+                "upper": 0.6,
+                "count": 5,
+                "mean_probability": 0.48424612382411586,
+                "outcome_rate": 0.2,
+                "absolute_gap": 0.28424612382411585
+              },
+              {
+                "bin": 3,
+                "lower": 0.6,
+                "upper": 0.8,
+                "count": 1,
+                "mean_probability": 0.7553202563690129,
+                "outcome_rate": 1.0,
+                "absolute_gap": 0.2446797436309871
+              },
+              {
+                "bin": 4,
+                "lower": 0.8,
+                "upper": 1.0,
+                "count": 4,
+                "mean_probability": 0.9618473481059486,
+                "outcome_rate": 1.0,
+                "absolute_gap": 0.03815265189405137
+              }
+            ]
+          }
+        },
+        "evaluable_groups": [
+          "domestic"
+        ],
+        "min_group_size": 30,
+        "ece_gap": null,
+        "brier_gap": null,
+        "warnings": [
+          "group 'international' has n=18 below min_group_size=30; excluded from calibration gaps"
+        ]
+      },
+      "threshold_sensitivity": [
+        {
+          "threshold": 0.3,
+          "accuracy": 0.7245179063360881,
+          "selection_rate": 0.5316804407713499,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.4,
+          "accuracy": 0.7534435261707989,
+          "selection_rate": 0.4283746556473829,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.5,
+          "accuracy": 0.7768595041322314,
+          "selection_rate": 0.349862258953168,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.6,
+          "accuracy": 0.7961432506887053,
+          "selection_rate": 0.27548209366391185,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        },
+        {
+          "threshold": 0.7,
+          "accuracy": 0.7727272727272727,
+          "selection_rate": 0.22176308539944903,
+          "selection_rate_gap": null,
+          "tpr_gap": null,
+          "fpr_gap": null,
+          "fairness_status": "not_evaluable"
+        }
+      ],
+      "interpretation": "Descriptive group audit only. Gaps are computed only across groups meeting min_group_size=30; they are not fairness verdicts."
+    }
+  },
+  "governance_and_risk": {
+    "deployment_review_executed": false,
+    "governance_evidence_gap": {
+      "checks": {
+        "privacy": false,
+        "accessibility": false,
+        "human_oversight": false,
+        "appeal_path": false,
+        "rollback": false,
+        "monitoring": false
+      },
+      "failed_checks": [
+        "privacy",
+        "accessibility",
+        "human_oversight",
+        "appeal_path",
+        "rollback",
+        "monitoring"
+      ],
+      "complete": false,
+      "decision_owner": "No deployment decision owner: research audit only"
+    },
+    "risk_register": [
+      {
+        "risk_id": "R1",
+        "description": "Historical outcome labels may encode institutional and structural inequities.",
+        "severity": 5,
+        "likelihood": 3,
+        "risk_score": 15,
+        "mitigation": "Treat outputs as descriptive research evidence; require institutional review and external validation before any use.",
+        "status": "open"
+      },
+      {
+        "risk_id": "R2",
+        "description": "False-positive dropout flags could stigmatize learners or trigger unnecessary intervention.",
+        "severity": 5,
+        "likelihood": 3,
+        "risk_score": 15,
+        "mitigation": "Do not deploy from this study; prospectively test intervention harms and benefits with human oversight.",
+        "status": "open"
+      },
+      {
+        "risk_id": "R3",
+        "description": "The binary primary target combines Enrolled and Graduate as no recorded dropout at the dataset endpoint.",
+        "severity": 4,
+        "likelihood": 3,
+        "risk_score": 12,
+        "mitigation": "Report the endpoint definition and a Dropout-versus-Graduate sensitivity analysis.",
+        "status": "open"
+      },
+      {
+        "risk_id": "R4",
+        "description": "Subgroup estimates can be unstable for sparse protected/intersectional groups.",
+        "severity": 4,
+        "likelihood": 3,
+        "risk_score": 12,
+        "mitigation": "Apply minimum evidence thresholds, retain warnings, and avoid gap estimates for under-sized groups.",
+        "status": "open"
+      },
+      {
+        "risk_id": "R5",
+        "description": "Single-institution historical data may not transport to other institutions or present-day cohorts.",
+        "severity": 5,
+        "likelihood": 4,
+        "risk_score": 20,
+        "mitigation": "Require external and temporal validation before operational consideration.",
+        "status": "open"
+      }
+    ],
+    "risk_summary": {
+      "risks": [
+        {
+          "risk_id": "R5",
+          "description": "Single-institution historical data may not transport to other institutions or present-day cohorts.",
+          "severity": 5,
+          "likelihood": 4,
+          "risk_score": 20,
+          "mitigation": "Require external and temporal validation before operational consideration.",
+          "owner": null,
+          "status": "open"
+        },
+        {
+          "risk_id": "R1",
+          "description": "Historical outcome labels may encode institutional and structural inequities.",
+          "severity": 5,
+          "likelihood": 3,
+          "risk_score": 15,
+          "mitigation": "Treat outputs as descriptive research evidence; require institutional review and external validation before any use.",
+          "owner": null,
+          "status": "open"
+        },
+        {
+          "risk_id": "R2",
+          "description": "False-positive dropout flags could stigmatize learners or trigger unnecessary intervention.",
+          "severity": 5,
+          "likelihood": 3,
+          "risk_score": 15,
+          "mitigation": "Do not deploy from this study; prospectively test intervention harms and benefits with human oversight.",
+          "owner": null,
+          "status": "open"
+        },
+        {
+          "risk_id": "R3",
+          "description": "The binary primary target combines Enrolled and Graduate as no recorded dropout at the dataset endpoint.",
+          "severity": 4,
+          "likelihood": 3,
+          "risk_score": 12,
+          "mitigation": "Report the endpoint definition and a Dropout-versus-Graduate sensitivity analysis.",
+          "owner": null,
+          "status": "open"
+        },
+        {
+          "risk_id": "R4",
+          "description": "Subgroup estimates can be unstable for sparse protected/intersectional groups.",
+          "severity": 4,
+          "likelihood": 3,
+          "risk_score": 12,
+          "mitigation": "Apply minimum evidence thresholds, retain warnings, and avoid gap estimates for under-sized groups.",
+          "owner": null,
+          "status": "open"
+        }
+      ],
+      "open_count": 5,
+      "highest_open_risk_score": 20
+    },
+    "interpretation": "Governance checks are intentionally incomplete because this repository is a research audit, not a deployment review. No PASS/BLOCK deployment verdict is produced."
+  },
+  "environment": {
+    "python": "3.11.16",
+    "numpy": "2.4.6",
+    "pandas": "2.3.3",
+    "scikit_learn": "1.9.1",
+    "ucimlrepo": "0.0.7",
+    "matplotlib": "3.11.2"
+  },
+  "interpretation_boundary": "Responsible-AIED measurement audit only; not fairness certification, causal inference, legal compliance, beneficial-intervention evidence, or deployment approval."
 }
