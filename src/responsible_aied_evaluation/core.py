@@ -391,14 +391,9 @@ def group_performance(
 ):
     _validate_records(records)
     threshold = _unit_interval(threshold, "threshold")
-    min_group_size = _positive_int(
-        min_group_size,
-        "min_group_size",
-    )
+    min_group_size = _positive_int(min_group_size, "min_group_size")
     if group_field not in {"group", "intersectional_group"}:
-        raise ValueError(
-            "group_field must be 'group' or 'intersectional_group'"
-        )
+        raise ValueError("group_field must be 'group' or 'intersectional_group'")
 
     grouped = {}
     for record in records:
@@ -409,26 +404,27 @@ def group_performance(
 
     rows = {}
     warnings = []
+    evaluable_groups = []
     for label in sorted(grouped, key=str):
         subset = grouped[label]
-        predictions = predictions_at_threshold(
-            subset,
-            threshold,
-        )
+        predictions = predictions_at_threshold(subset, threshold)
         metrics = confusion_metrics(
             predictions,
             [record.outcome for record in subset],
         )
+        metrics["evaluable"] = len(subset) >= min_group_size
         rows[label] = metrics
-        if len(subset) < min_group_size:
+        if metrics["evaluable"]:
+            evaluable_groups.append(label)
+        else:
             warnings.append(
                 f"group {label!r} has n={len(subset)} below "
-                f"min_group_size={min_group_size}"
+                f"min_group_size={min_group_size}; excluded from disparity gaps"
             )
 
-    if len(rows) < 2:
+    if len(evaluable_groups) < 2:
         status = "not_evaluable"
-        reason = "fewer_than_two_groups"
+        reason = "fewer_than_two_evaluable_groups"
     else:
         status = "scored"
         reason = None
@@ -438,9 +434,10 @@ def group_performance(
         "reason": reason,
         "group_field": group_field,
         "groups": rows,
+        "evaluable_groups": evaluable_groups,
+        "min_group_size": min_group_size,
         "warnings": warnings,
     }
-
 
 def fairness_report(
     records,
@@ -467,10 +464,11 @@ def fairness_report(
             "equalized_odds_gap": None,
         }
 
-    rows = list(performance["groups"].values())
-    selection_gap = _gap(
-        [row["selection_rate"] for row in rows]
-    )
+    rows = [
+        performance["groups"][label]
+        for label in performance["evaluable_groups"]
+    ]
+    selection_gap = _gap([row["selection_rate"] for row in rows])
     tpr_gap = _gap([row["recall_tpr"] for row in rows])
     fpr_gap = _gap([row["fpr"] for row in rows])
     fnr_gap = _gap([row["fnr"] for row in rows])
@@ -478,16 +476,13 @@ def fairness_report(
     precision_gap = _gap([row["precision"] for row in rows])
 
     equalized_odds_candidates = [
-        value
-        for value in (tpr_gap, fpr_gap)
-        if value is not None
+        value for value in (tpr_gap, fpr_gap) if value is not None
     ]
     equalized_odds_gap = (
         max(equalized_odds_candidates)
         if equalized_odds_candidates
         else None
     )
-
     return {
         **performance,
         "selection_rate_gap": selection_gap,
@@ -498,7 +493,6 @@ def fairness_report(
         "precision_gap": precision_gap,
         "equalized_odds_gap": equalized_odds_gap,
     }
-
 
 def demographic_parity_difference(
     predictions,
@@ -544,14 +538,9 @@ def group_calibration_report(
 ):
     _validate_records(records)
     bins = _positive_int(bins, "bins")
-    min_group_size = _positive_int(
-        min_group_size,
-        "min_group_size",
-    )
+    min_group_size = _positive_int(min_group_size, "min_group_size")
     if group_field not in {"group", "intersectional_group"}:
-        raise ValueError(
-            "group_field must be 'group' or 'intersectional_group'"
-        )
+        raise ValueError("group_field must be 'group' or 'intersectional_group'")
 
     grouped = {}
     for record in records:
@@ -562,81 +551,66 @@ def group_calibration_report(
 
     rows = {}
     warnings = []
+    evaluable_groups = []
     for label in sorted(grouped, key=str):
         subset = grouped[label]
         probs = [record.probability for record in subset]
         outcomes = [record.outcome for record in subset]
+        evaluable = len(subset) >= min_group_size
         rows[label] = {
             "n": len(subset),
-            "ece": expected_calibration_error(
-                probs,
-                outcomes,
-                bins=bins,
-            ),
+            "evaluable": evaluable,
+            "ece": expected_calibration_error(probs, outcomes, bins=bins),
             "brier": brier_score(probs, outcomes),
-            "bins": calibration_bins(
-                probs,
-                outcomes,
-                bins=bins,
-            ),
+            "bins": calibration_bins(probs, outcomes, bins=bins),
         }
-        if len(subset) < min_group_size:
+        if evaluable:
+            evaluable_groups.append(label)
+        else:
             warnings.append(
                 f"group {label!r} has n={len(subset)} below "
-                f"min_group_size={min_group_size}"
+                f"min_group_size={min_group_size}; excluded from calibration gaps"
             )
 
-    if len(rows) < 2:
+    if len(evaluable_groups) < 2:
         status = "not_evaluable"
-        reason = "fewer_than_two_groups"
+        reason = "fewer_than_two_evaluable_groups"
         ece_gap = None
         brier_gap = None
     else:
         status = "scored"
         reason = None
-        ece_gap = _gap([row["ece"] for row in rows.values()])
-        brier_gap = _gap(
-            [row["brier"] for row in rows.values()]
-        )
+        ece_gap = _gap([rows[label]["ece"] for label in evaluable_groups])
+        brier_gap = _gap([rows[label]["brier"] for label in evaluable_groups])
 
     return {
         "status": status,
         "reason": reason,
         "group_field": group_field,
         "groups": rows,
+        "evaluable_groups": evaluable_groups,
+        "min_group_size": min_group_size,
         "ece_gap": ece_gap,
         "brier_gap": brier_gap,
         "warnings": warnings,
     }
 
-
-def _metric_from_records(records, metric, threshold):
+def _metric_from_records(records, metric, threshold, min_group_size=1):
     probs = [record.probability for record in records]
     outcomes = [record.outcome for record in records]
     predictions = predictions_at_threshold(records, threshold)
 
     if metric == "accuracy":
-        return confusion_metrics(
-            predictions,
-            outcomes,
-        )["accuracy"]
+        return confusion_metrics(predictions, outcomes)["accuracy"]
     if metric == "brier":
         return brier_score(probs, outcomes)
     if metric == "ece":
-        return expected_calibration_error(
-            probs,
-            outcomes,
-            bins=5,
-        )
-    if metric in {
-        "selection_rate_gap",
-        "tpr_gap",
-        "fpr_gap",
-    }:
+        return expected_calibration_error(probs, outcomes, bins=5)
+    if metric in {"selection_rate_gap", "tpr_gap", "fpr_gap"}:
         report = fairness_report(
             records,
             threshold=threshold,
-            min_group_size=1,
+            min_group_size=min_group_size,
         )
         if report["status"] != "scored":
             return None
@@ -652,17 +626,24 @@ def bootstrap_interval(
     n_resamples=500,
     seed=7,
     alpha=0.05,
+    min_group_size=1,
+    stratify_by_group=False,
 ):
     _validate_records(records)
     threshold = _unit_interval(threshold, "threshold")
     n_resamples = _positive_int(n_resamples, "n_resamples")
+    min_group_size = _positive_int(min_group_size, "min_group_size")
     alpha = _finite_number(alpha, "alpha")
     if not 0.0 < alpha < 1.0:
         raise ValueError("alpha must be between 0 and 1")
     if isinstance(seed, bool) or not isinstance(seed, int):
         raise ValueError("seed must be an integer")
+    if not isinstance(stratify_by_group, bool):
+        raise ValueError("stratify_by_group must be boolean")
 
-    point = _metric_from_records(records, metric, threshold)
+    point = _metric_from_records(
+        records, metric, threshold, min_group_size=min_group_size
+    )
     if point is None:
         return {
             "status": "not_evaluable",
@@ -670,16 +651,31 @@ def bootstrap_interval(
             "point": None,
             "lower": None,
             "upper": None,
+            "resampling": "group-stratified" if stratify_by_group else "iid",
         }
 
     rng = random.Random(seed)
+    grouped = {}
+    if stratify_by_group:
+        for record in records:
+            grouped.setdefault(record.group, []).append(record)
+
     values = []
     for _ in range(n_resamples):
-        sample = [
-            records[rng.randrange(len(records))]
-            for _ in range(len(records))
-        ]
-        # Preserve duplicate draws while making case IDs unique.
+        if stratify_by_group:
+            sample = []
+            for label in sorted(grouped, key=str):
+                group_rows = grouped[label]
+                sample.extend(
+                    group_rows[rng.randrange(len(group_rows))]
+                    for _ in range(len(group_rows))
+                )
+        else:
+            sample = [
+                records[rng.randrange(len(records))]
+                for _ in range(len(records))
+            ]
+
         sample = [
             EvaluationRecord(
                 case_id=f"boot-{index}",
@@ -690,7 +686,12 @@ def bootstrap_interval(
             )
             for index, record in enumerate(sample)
         ]
-        value = _metric_from_records(sample, metric, threshold)
+        value = _metric_from_records(
+            sample,
+            metric,
+            threshold,
+            min_group_size=min_group_size,
+        )
         if value is not None:
             values.append(value)
 
@@ -701,6 +702,7 @@ def bootstrap_interval(
             "point": point,
             "lower": None,
             "upper": None,
+            "resampling": "group-stratified" if stratify_by_group else "iid",
         }
 
     values.sort()
@@ -712,10 +714,7 @@ def bootstrap_interval(
         if lower == upper:
             return values[lower]
         weight = position - lower
-        return (
-            values[lower] * (1 - weight)
-            + values[upper] * weight
-        )
+        return values[lower] * (1 - weight) + values[upper] * weight
 
     return {
         "status": "scored",
@@ -724,8 +723,9 @@ def bootstrap_interval(
         "lower": quantile(alpha / 2),
         "upper": quantile(1 - alpha / 2),
         "resamples_used": len(values),
+        "min_group_size": min_group_size,
+        "resampling": "group-stratified" if stratify_by_group else "iid",
     }
-
 
 def threshold_sensitivity(
     records,
