@@ -1,9 +1,0 @@
-field,value,rationale
-probability_threshold,0.50,Synthetic decision threshold used only for the demo
-max_ece,0.20,Study-specific demonstration limit not a universal ethical threshold
-max_brier,0.22,Study-specific demonstration limit for probabilistic error
-max_selection_rate_gap,0.25,Study-specific demonstration tolerance for selection-rate disparity
-max_tpr_gap,0.25,Study-specific demonstration tolerance for missed-benefit disparity
-max_fpr_gap,0.25,Study-specific demonstration tolerance for unnecessary-intervention disparity
-min_group_size,8,Minimum synthetic subgroup count before treating group estimates as usable
-max_open_risk_score,12,Open risks above this synthetic severity-likelihood product block review

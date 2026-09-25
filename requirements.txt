@@ -1,2 +1,4 @@
-# Core metrics, governance review, tests, and synthetic demo use only the Python standard library.
-# Add pinned research dependencies only when a concrete empirical study requires them.
+numpy>=1.26,<3
+pandas>=2.2,<3
+scikit-learn>=1.5,<2
+ucimlrepo>=0.0.7,<1

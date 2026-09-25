@@ -1,0 +1,7 @@
+{
+  "research_bundle": true,
+  "status": "regenerate_required",
+  "message": "Run scripts/run_uci_study.py to generate the real UCI 697 evaluation audit.",
+  "dataset": "UCI 697",
+  "doi": "10.24432/C5MC89"
+}

@@ -1,2 +1,0 @@
-privacy_reviewed,accessibility_reviewed,human_oversight_defined,appeal_path_defined,rollback_plan_defined,monitoring_plan_defined,decision_owner,privacy_evidence,accessibility_evidence,human_oversight_owner,appeal_path,rollback_owner,monitoring_plan
-true,true,true,true,true,true,Responsible AI Review Board,PIA-SYN-01 completed for synthetic demo,A11Y-SYN-01 accessibility checklist completed,Academic operations lead,Learner appeal then instructor escalation,Product safety owner,Monthly subgroup calibration drift and incident review
