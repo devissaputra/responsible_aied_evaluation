@@ -245,6 +245,8 @@ def group_audit(
     probability: np.ndarray,
     outcome: np.ndarray,
     labels: pd.Series,
+    *,
+    include_bootstrap: bool = True,
 ) -> dict:
     records = make_records(indices, probability, outcome, labels)
     fairness = fairness_report(
@@ -257,19 +259,7 @@ def group_audit(
         bins=5,
         min_group_size=MIN_GROUP_SIZE,
     )
-    uncertainty = {
-        metric: bootstrap_interval(
-            records,
-            metric,
-            threshold=0.5,
-            n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
-            seed=SEED,
-            min_group_size=MIN_GROUP_SIZE,
-            stratify_by_group=True,
-        )
-        for metric in ["selection_rate_gap", "tpr_gap", "fpr_gap"]
-    }
-    return {
+    result = {
         "fairness_metrics": fairness,
         "calibration": calibration,
         "threshold_sensitivity": threshold_sensitivity(
@@ -277,25 +267,44 @@ def group_audit(
             [0.30, 0.40, 0.50, 0.60, 0.70],
             min_group_size=MIN_GROUP_SIZE,
         ),
-        "conditional_holdout_bootstrap": uncertainty,
         "interpretation": (
             "Descriptive group audit only. Gaps are computed only across groups meeting "
             f"min_group_size={MIN_GROUP_SIZE}; they are not fairness verdicts."
         ),
     }
-
+    if include_bootstrap:
+        result["conditional_holdout_bootstrap"] = {
+            metric: bootstrap_interval(
+                records,
+                metric,
+                threshold=0.5,
+                n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
+                seed=SEED,
+                min_group_size=MIN_GROUP_SIZE,
+                stratify_by_group=True,
+            )
+            for metric in ["selection_rate_gap", "tpr_gap", "fpr_gap"]
+        }
+    return result
 
 def intersectional_audit(
     indices: np.ndarray,
     probability: np.ndarray,
     outcome: np.ndarray,
     audit_frame: pd.DataFrame,
+    *,
+    include_bootstrap: bool = True,
 ) -> dict:
     labels = audit_frame["gender_x_international"]
-    result = group_audit(indices, probability, outcome, labels)
+    result = group_audit(
+        indices,
+        probability,
+        outcome,
+        labels,
+        include_bootstrap=include_bootstrap,
+    )
     result["definition"] = "gender x international-status intersection"
     return result
-
 
 def evaluate_split(
     model_X: pd.DataFrame,
@@ -305,6 +314,7 @@ def evaluate_split(
     *,
     detailed: bool = False,
     include_sample_bootstrap: bool = False,
+    include_group_bootstrap: bool = False,
 ) -> dict:
     indices = np.arange(len(model_X))
     train_idx, test_idx = train_test_split(
@@ -336,24 +346,43 @@ def evaluate_split(
                 "probability": probability,
                 "y_test": y_test,
                 "gender": group_audit(
-                    test_idx, probability, y_test, audit_frame["gender"]
+                    test_idx,
+                    probability,
+                    y_test,
+                    audit_frame["gender"],
+                    include_bootstrap=include_group_bootstrap,
                 ),
                 "international": group_audit(
-                    test_idx, probability, y_test, audit_frame["international"]
+                    test_idx,
+                    probability,
+                    y_test,
+                    audit_frame["international"],
+                    include_bootstrap=include_group_bootstrap,
                 ),
                 "nationality_group": group_audit(
-                    test_idx, probability, y_test, audit_frame["nationality_group"]
+                    test_idx,
+                    probability,
+                    y_test,
+                    audit_frame["nationality_group"],
+                    include_bootstrap=include_group_bootstrap,
                 ),
                 "special_needs": group_audit(
-                    test_idx, probability, y_test, audit_frame["special_needs"]
+                    test_idx,
+                    probability,
+                    y_test,
+                    audit_frame["special_needs"],
+                    include_bootstrap=include_group_bootstrap,
                 ),
                 "intersectional_gender_international": intersectional_audit(
-                    test_idx, probability, y_test, audit_frame
+                    test_idx,
+                    probability,
+                    y_test,
+                    audit_frame,
+                    include_bootstrap=include_group_bootstrap,
                 ),
             }
         )
     return out
-
 
 def _summary(values: list[float]) -> dict:
     array = np.asarray(values, dtype=float)
@@ -496,7 +525,8 @@ def target_sensitivity(
         audit_sub,
         SEED,
         detailed=True,
-        include_sample_bootstrap=True,
+        include_sample_bootstrap=False,
+        include_group_bootstrap=False,
     )
     return {
         "definition": "Dropout versus Graduate only; Enrolled cases excluded as unresolved endpoint sensitivity.",
@@ -761,6 +791,7 @@ def main() -> None:
         SEED,
         detailed=True,
         include_sample_bootstrap=True,
+        include_group_bootstrap=True,
     )
     repeated = repeated_split_robustness(model_X, y, audit_frame)
     refit = training_refit_bootstrap(
