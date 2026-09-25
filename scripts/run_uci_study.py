@@ -211,14 +211,28 @@ def overall_metrics(
     }
     if include_sample_bootstrap:
         result["sample_bootstrap"] = {
-            metric: bootstrap_interval(
+            "accuracy": bootstrap_interval(
                 records,
-                metric,
+                "accuracy",
                 threshold=threshold,
                 n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
                 seed=SEED,
-            )
-            for metric in ["accuracy", "brier", "ece"]
+            ),
+            "brier": bootstrap_interval(
+                records,
+                "brier",
+                threshold=threshold,
+                n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
+                seed=SEED,
+            ),
+            "ece_10": bootstrap_interval(
+                records,
+                "ece",
+                threshold=threshold,
+                n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
+                seed=SEED,
+                ece_bins=10,
+            ),
         }
     return result
 
