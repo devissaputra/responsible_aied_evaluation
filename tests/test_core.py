@@ -261,6 +261,23 @@ class CoreTests(unittest.TestCase):
             result["point"],
         )
 
+    def test_bootstrap_ece_uses_requested_bin_count(self):
+        rows = records()
+        result = core.bootstrap_interval(
+            rows,
+            "ece",
+            n_resamples=50,
+            seed=4,
+            ece_bins=10,
+        )
+        expected = core.expected_calibration_error(
+            [record.probability for record in rows],
+            [record.outcome for record in rows],
+            bins=10,
+        )
+        self.assertAlmostEqual(result["point"], expected)
+        self.assertEqual(result["ece_bins"], 10)
+
     def test_bootstrap_fairness_interval(self):
         result = core.bootstrap_interval(
             records(),
