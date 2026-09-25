@@ -1,7 +1,23 @@
 # Data Policy
 
-The empirical Research Bundle fetches **UCI dataset 697** at run time through `ucimlrepo`.
+The research bundle retrieves real UCI dataset 697 at run time using `ucimlrepo`.
 
-No source student records are committed to this repository. The former synthetic evaluation, governance and risk CSVs have been removed from `data/`; software fixtures now live only in code/tests.
+Raw learner-level source data are not committed.
 
-See `docs/dataset_card.md` for provenance, license and validity boundaries.
+The empirical adapter records:
+
+- UCI dataset ID and DOI;
+- original source target counts;
+- normalized dataset SHA-256 fingerprint;
+- post-enrollment features excluded;
+- audit-only attributes excluded from prediction;
+- runtime package versions.
+
+The fingerprint is computed over the retrieved feature matrix plus original target in row/column order.
+
+See:
+
+- ../DATA.md for provenance and endpoint semantics;
+- ../docs/dataset_card.md for the population and target transformation;
+- ../docs/research_protocol.md for the frozen analysis design;
+- ../REPRODUCIBILITY.md for execution details.
