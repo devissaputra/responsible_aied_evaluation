@@ -679,12 +679,17 @@ def write_figures(
         labels = audit_frame.loc[test_idx, column]
         for label in sorted(labels.unique()):
             mask = labels.to_numpy() == label
-            if int(mask.sum()) < MIN_GROUP_SIZE:
-                continue
+            n_group = int(mask.sum())
             true_rate, pred_rate = calibration_curve(
                 y_test[mask], probability[mask], n_bins=5, strategy="uniform"
             )
-            ax.plot(pred_rate, true_rate, marker="o", label=f"{label} (n={int(mask.sum())})")
+            suffix = "" if n_group >= MIN_GROUP_SIZE else "; below audit minimum"
+            ax.plot(
+                pred_rate,
+                true_rate,
+                marker="o",
+                label=f"{label} (n={n_group}{suffix})",
+            )
         ax.plot([0, 1], [0, 1], linestyle="--", linewidth=1, label="Ideal")
         ax.set_xlabel("Mean predicted probability")
         ax.set_ylabel("Observed dropout rate")
@@ -697,13 +702,28 @@ def write_figures(
         rows = result["primary_split"][audit_name]["threshold_sensitivity"]
         fig, ax = plt.subplots(figsize=(7, 5))
         thresholds = [row["threshold"] for row in rows]
-        for metric in ["selection_rate_gap", "tpr_gap", "fpr_gap"]:
-            values = [row[metric] for row in rows]
-            ax.plot(thresholds, values, marker="o", label=metric)
-        ax.set_xlabel("Reference decision threshold")
-        ax.set_ylabel("Absolute group gap")
-        ax.set_title(f"Threshold sensitivity: {audit_name.replace('_', ' ')}")
-        ax.legend()
+        gap_series = {
+            metric: [row[metric] for row in rows]
+            for metric in ["selection_rate_gap", "tpr_gap", "fpr_gap"]
+        }
+        if any(any(value is not None for value in values) for values in gap_series.values()):
+            for metric, values in gap_series.items():
+                ax.plot(thresholds, values, marker="o", label=metric)
+            ax.set_xlabel("Reference decision threshold")
+            ax.set_ylabel("Absolute group gap")
+            ax.set_title(f"Threshold sensitivity: {audit_name.replace('_', ' ')}")
+            ax.legend()
+        else:
+            groups = result["primary_split"][audit_name]["fairness_metrics"]["groups"]
+            names = list(groups)
+            counts = [groups[name]["n"] for name in names]
+            ax.bar(names, counts)
+            ax.axhline(MIN_GROUP_SIZE, linestyle="--", linewidth=1)
+            ax.set_ylabel("Holdout group size")
+            ax.set_title(
+                f"{audit_name.replace('_', ' ').title()} gap not evaluable at n={MIN_GROUP_SIZE} minimum"
+            )
+            ax.tick_params(axis="x", rotation=20)
         fig.tight_layout()
         fig.savefig(figdir / f"{audit_name}_threshold_sensitivity.png", dpi=170)
         plt.close(fig)
