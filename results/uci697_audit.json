@@ -1,7 +1,292 @@
 {
   "research_bundle": true,
-  "status": "regenerate_required",
-  "message": "Run scripts/run_uci_study.py to generate the real UCI 697 evaluation audit.",
-  "dataset": "UCI 697",
-  "doi": "10.24432/C5MC89"
+  "dataset": {
+    "name": "Predict Students' Dropout and Academic Success",
+    "uci_id": 697,
+    "doi": "10.24432/C5MC89",
+    "n": 4424
+  },
+  "design": {
+    "seed": 42,
+    "n_train": 3539,
+    "n_test": 885,
+    "target": "Dropout vs Enrolled/Graduate",
+    "forbidden_post_enrollment_columns": [
+      "Curricular units 1st sem (credited)",
+      "Curricular units 1st sem (enrolled)",
+      "Curricular units 1st sem (evaluations)",
+      "Curricular units 1st sem (approved)",
+      "Curricular units 1st sem (grade)",
+      "Curricular units 1st sem (without evaluations)",
+      "Curricular units 2nd sem (credited)",
+      "Curricular units 2nd sem (enrolled)",
+      "Curricular units 2nd sem (evaluations)",
+      "Curricular units 2nd sem (approved)",
+      "Curricular units 2nd sem (grade)",
+      "Curricular units 2nd sem (without evaluations)"
+    ],
+    "protected_excluded_from_prediction": [
+      "Gender",
+      "Nacionality"
+    ],
+    "n_model_features": 22
+  },
+  "overall": {
+    "roc_auc": 0.8318354385882684,
+    "brier": 0.14432242291961148,
+    "ece_10": 0.031663205234106005,
+    "confusion": {
+      "n": 885,
+      "tp": 152,
+      "tn": 552,
+      "fp": 49,
+      "fn": 132,
+      "accuracy": 0.7954802259887006,
+      "precision": 0.7562189054726368,
+      "recall_tpr": 0.5352112676056338,
+      "specificity_tnr": 0.9184692179700499,
+      "fpr": 0.08153078202995008,
+      "fnr": 0.4647887323943662,
+      "selection_rate": 0.2271186440677966
+    }
+  },
+  "gender_audit": {
+    "status": "scored",
+    "reason": null,
+    "group_field": "group",
+    "groups": {
+      "gender_code_0": {
+        "n": 564,
+        "tp": 75,
+        "tn": 394,
+        "fp": 32,
+        "fn": 63,
+        "accuracy": 0.8315602836879432,
+        "precision": 0.7009345794392523,
+        "recall_tpr": 0.5434782608695652,
+        "specificity_tnr": 0.9248826291079812,
+        "fpr": 0.07511737089201878,
+        "fnr": 0.45652173913043476,
+        "selection_rate": 0.18971631205673758
+      },
+      "gender_code_1": {
+        "n": 321,
+        "tp": 77,
+        "tn": 158,
+        "fp": 17,
+        "fn": 69,
+        "accuracy": 0.7320872274143302,
+        "precision": 0.8191489361702128,
+        "recall_tpr": 0.5273972602739726,
+        "specificity_tnr": 0.9028571428571428,
+        "fpr": 0.09714285714285714,
+        "fnr": 0.4726027397260274,
+        "selection_rate": 0.29283489096573206
+      }
+    },
+    "warnings": [],
+    "selection_rate_gap": 0.10311857890899448,
+    "tpr_gap": 0.016081000595592587,
+    "fpr_gap": 0.02202548625083836,
+    "fnr_gap": 0.016081000595592643,
+    "accuracy_gap": 0.09947305627361303,
+    "precision_gap": 0.11821435673096048,
+    "equalized_odds_gap": 0.02202548625083836
+  },
+  "gender_calibration": {
+    "status": "scored",
+    "reason": null,
+    "group_field": "group",
+    "groups": {
+      "gender_code_0": {
+        "n": 564,
+        "ece": 0.04521707547483112,
+        "brier": 0.12632503749430526,
+        "bins": [
+          {
+            "bin": 0,
+            "lower": 0.0,
+            "upper": 0.2,
+            "count": 297,
+            "mean_probability": 0.10186303845464743,
+            "outcome_rate": 0.08754208754208755,
+            "absolute_gap": 0.014320950912559888
+          },
+          {
+            "bin": 1,
+            "lower": 0.2,
+            "upper": 0.4,
+            "count": 126,
+            "mean_probability": 0.28840709306998574,
+            "outcome_rate": 0.20634920634920634,
+            "absolute_gap": 0.0820578867207794
+          },
+          {
+            "bin": 2,
+            "lower": 0.4,
+            "upper": 0.6,
+            "count": 59,
+            "mean_probability": 0.4850514715273652,
+            "outcome_rate": 0.3389830508474576,
+            "absolute_gap": 0.1460684206799076
+          },
+          {
+            "bin": 3,
+            "lower": 0.6,
+            "upper": 0.8,
+            "count": 30,
+            "mean_probability": 0.7010997550577607,
+            "outcome_rate": 0.6666666666666666,
+            "absolute_gap": 0.03443308839109405
+          },
+          {
+            "bin": 4,
+            "lower": 0.8,
+            "upper": 1.0,
+            "count": 52,
+            "mean_probability": 0.9088227874636325,
+            "outcome_rate": 0.8846153846153846,
+            "absolute_gap": 0.02420740284824796
+          }
+        ]
+      },
+      "gender_code_1": {
+        "n": 321,
+        "ece": 0.060422179631625494,
+        "brier": 0.17594399731173818,
+        "bins": [
+          {
+            "bin": 0,
+            "lower": 0.0,
+            "upper": 0.2,
+            "count": 101,
+            "mean_probability": 0.11448451503907278,
+            "outcome_rate": 0.1485148514851485,
+            "absolute_gap": 0.034030336446075726
+          },
+          {
+            "bin": 1,
+            "lower": 0.2,
+            "upper": 0.4,
+            "count": 100,
+            "mean_probability": 0.2854485582519402,
+            "outcome_rate": 0.39,
+            "absolute_gap": 0.1045514417480598
+          },
+          {
+            "bin": 2,
+            "lower": 0.4,
+            "upper": 0.6,
+            "count": 43,
+            "mean_probability": 0.48332851384986747,
+            "outcome_rate": 0.5348837209302325,
+            "absolute_gap": 0.05155520708036504
+          },
+          {
+            "bin": 3,
+            "lower": 0.6,
+            "upper": 0.8,
+            "count": 24,
+            "mean_probability": 0.6992506268309708,
+            "outcome_rate": 0.7916666666666666,
+            "absolute_gap": 0.0924160398356958
+          },
+          {
+            "bin": 4,
+            "lower": 0.8,
+            "upper": 1.0,
+            "count": 53,
+            "mean_probability": 0.9232367425400045,
+            "outcome_rate": 0.9433962264150944,
+            "absolute_gap": 0.020159483875089812
+          }
+        ]
+      }
+    },
+    "ece_gap": 0.015205104156794373,
+    "brier_gap": 0.04961895981743292,
+    "warnings": []
+  },
+  "threshold_sensitivity": [
+    {
+      "threshold": 0.3,
+      "accuracy": 0.7457627118644068,
+      "selection_rate": 0.392090395480226,
+      "selection_rate_gap": 0.15221714058460928,
+      "tpr_gap": 0.023128846535636294,
+      "fpr_gap": 0.07311871227364186,
+      "fairness_status": "scored"
+    },
+    {
+      "threshold": 0.4,
+      "accuracy": 0.7864406779661017,
+      "selection_rate": 0.29491525423728815,
+      "selection_rate_gap": 0.12383177570093457,
+      "tpr_gap": 0.006948580504268387,
+      "fpr_gap": 0.030892018779342723,
+      "fairness_status": "scored"
+    },
+    {
+      "threshold": 0.5,
+      "accuracy": 0.7954802259887006,
+      "selection_rate": 0.2271186440677966,
+      "selection_rate_gap": 0.10311857890899448,
+      "tpr_gap": 0.016081000595592587,
+      "fpr_gap": 0.02202548625083836,
+      "fairness_status": "scored"
+    },
+    {
+      "threshold": 0.6,
+      "accuracy": 0.8045197740112995,
+      "selection_rate": 0.17966101694915254,
+      "selection_rate_gap": 0.09448531848611388,
+      "tpr_gap": 0.005658129839190007,
+      "fpr_gap": 0.008155600268276324,
+      "fairness_status": "scored"
+    },
+    {
+      "threshold": 0.7,
+      "accuracy": 0.7898305084745763,
+      "selection_rate": 0.14689265536723164,
+      "selection_rate_gap": 0.07746735600185589,
+      "tpr_gap": 0.00853682747667267,
+      "fpr_gap": 0.0027498323272971137,
+      "fairness_status": "scored"
+    }
+  ],
+  "bootstrap_uncertainty": {
+    "accuracy": {
+      "status": "scored",
+      "metric": "accuracy",
+      "point": 0.7954802259887006,
+      "lower": 0.768361581920904,
+      "upper": 0.8225988700564971,
+      "resamples_used": 1000
+    },
+    "selection_rate_gap": {
+      "status": "scored",
+      "metric": "selection_rate_gap",
+      "point": 0.10311857890899448,
+      "lower": 0.04236421499629414,
+      "upper": 0.16407780536688457,
+      "resamples_used": 1000
+    },
+    "tpr_gap": {
+      "status": "scored",
+      "metric": "tpr_gap",
+      "point": 0.016081000595592587,
+      "lower": 0.0023846430464078126,
+      "upper": 0.137040752676776,
+      "resamples_used": 1000
+    },
+    "fpr_gap": {
+      "status": "scored",
+      "metric": "fpr_gap",
+      "point": 0.02202548625083836,
+      "lower": 0.0009611117945683871,
+      "upper": 0.07140880766206126,
+      "resamples_used": 1000
+    }
+  },
+  "interpretation_boundary": "measurement audit only; not fairness certification or deployment approval"
 }
