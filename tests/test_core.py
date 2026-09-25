@@ -52,7 +52,7 @@ def config(**overrides):
         "max_open_risk_score": 12,
     }
     base.update(overrides)
-    return core.DecisionConfig(**base)
+    return core.ReviewCriteria(**base)
 
 
 class CoreTests(unittest.TestCase):
@@ -381,7 +381,7 @@ class CoreTests(unittest.TestCase):
 
     def test_config_requires_explicit_valid_thresholds(self):
         with self.assertRaises(ValueError):
-            core.DecisionConfig(
+            core.ReviewCriteria(
                 probability_threshold=0.5,
                 max_ece=1.2,
                 max_brier=0.2,
