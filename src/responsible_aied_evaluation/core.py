@@ -186,7 +186,7 @@ class RiskItem:
 
 
 @dataclass(frozen=True)
-class DecisionConfig:
+class ReviewCriteria:
     """Study-specific thresholds supplied by the evaluator."""
 
     probability_threshold: float
@@ -932,8 +932,8 @@ def configured_evidence_review(
 ):
     """Apply evaluator-supplied evidence criteria without claiming fairness or deployment readiness."""
     _validate_records(records)
-    if not isinstance(config, DecisionConfig):
-        raise ValueError("config must be a DecisionConfig")
+    if not isinstance(config, ReviewCriteria):
+        raise ValueError("config must be a ReviewCriteria")
 
     probs = [record.probability for record in records]
     outcomes = [record.outcome for record in records]
