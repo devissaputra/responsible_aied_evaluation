@@ -595,7 +595,13 @@ def group_calibration_report(
         "warnings": warnings,
     }
 
-def _metric_from_records(records, metric, threshold, min_group_size=1):
+def _metric_from_records(
+    records,
+    metric,
+    threshold,
+    min_group_size=1,
+    ece_bins=5,
+):
     probs = [record.probability for record in records]
     outcomes = [record.outcome for record in records]
     predictions = predictions_at_threshold(records, threshold)
@@ -605,7 +611,7 @@ def _metric_from_records(records, metric, threshold, min_group_size=1):
     if metric == "brier":
         return brier_score(probs, outcomes)
     if metric == "ece":
-        return expected_calibration_error(probs, outcomes, bins=5)
+        return expected_calibration_error(probs, outcomes, bins=ece_bins)
     if metric in {"selection_rate_gap", "tpr_gap", "fpr_gap"}:
         report = fairness_report(
             records,
@@ -628,11 +634,13 @@ def bootstrap_interval(
     alpha=0.05,
     min_group_size=1,
     stratify_by_group=False,
+    ece_bins=5,
 ):
     _validate_records(records)
     threshold = _unit_interval(threshold, "threshold")
     n_resamples = _positive_int(n_resamples, "n_resamples")
     min_group_size = _positive_int(min_group_size, "min_group_size")
+    ece_bins = _positive_int(ece_bins, "ece_bins")
     alpha = _finite_number(alpha, "alpha")
     if not 0.0 < alpha < 1.0:
         raise ValueError("alpha must be between 0 and 1")
@@ -642,7 +650,11 @@ def bootstrap_interval(
         raise ValueError("stratify_by_group must be boolean")
 
     point = _metric_from_records(
-        records, metric, threshold, min_group_size=min_group_size
+        records,
+        metric,
+        threshold,
+        min_group_size=min_group_size,
+        ece_bins=ece_bins,
     )
     if point is None:
         return {
@@ -691,6 +703,7 @@ def bootstrap_interval(
             metric,
             threshold,
             min_group_size=min_group_size,
+            ece_bins=ece_bins,
         )
         if value is not None:
             values.append(value)
@@ -725,6 +738,7 @@ def bootstrap_interval(
         "resamples_used": len(values),
         "min_group_size": min_group_size,
         "resampling": "group-stratified" if stratify_by_group else "iid",
+        "ece_bins": ece_bins if metric == "ece" else None,
     }
 
 def threshold_sensitivity(
