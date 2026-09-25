@@ -490,8 +490,18 @@ def training_refit_bootstrap(
     summary = {}
     for key in metric_rows[0]:
         values = [row[key] for row in metric_rows if row[key] is not None]
+        if not values:
+            summary[key] = {
+                "status": "not_evaluable",
+                "n_valid": 0,
+                "median": None,
+                "lower_95": None,
+                "upper_95": None,
+            }
+            continue
         array = np.asarray(values, dtype=float)
         summary[key] = {
+            "status": "scored",
             "n_valid": int(len(array)),
             "median": float(np.median(array)),
             "lower_95": float(np.quantile(array, 0.025)),
