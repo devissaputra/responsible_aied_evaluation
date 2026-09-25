@@ -1,199 +1,91 @@
-# Ethics, safety, and misuse risks
+# Ethics, Validity, and Misuse Risks
 
-## Intended use
+## Research purpose
 
-Responsible AIED Evaluation Toolkit is a research prototype for structured review of educational AI systems.
+The repository asks whether a transparent enrollment-time baseline can be evaluated responsibly across predictive quality, calibration, subgroup behavior, uncertainty and governance evidence.
 
-It should support accountable human evaluation.
+It does not ask whether the model should be deployed.
 
-It must not be presented as an automatic ethics certificate, legal opinion, or universal deployment approval mechanism.
+## Risk 1 — historical labels
 
-## Human rights and educational purpose
+Dropout status is an observed historical endpoint, not a direct measurement of ability, motivation or educational worth.
 
-Educational AI can affect access to support, attention, opportunities, evaluation, and learner autonomy.
+Institutional processes, finances, work constraints, health, disability, support, discrimination and many other factors can influence the observed outcome.
 
-Responsible review should therefore consider:
+**Mitigation:** describe the target narrowly, avoid learner-essentialist interpretations and require causal/prospective evidence before intervention claims.
 
-- fairness and non-discrimination
-- privacy and data governance
-- transparency
-- human oversight
-- accessibility
-- learner agency
-- pedagogical benefit and harm
-- contestability
-- ongoing monitoring
+## Risk 2 — endpoint compression
 
-These concerns align broadly with international responsible-AI guidance, but this repository does not claim formal compliance with any external framework.
+The original dataset contains Dropout, Enrolled and Graduate.
 
-## Fairness metrics are not moral verdicts
+Combining Enrolled and Graduate into one negative class can obscure meaningful differences.
 
-Different fairness metrics answer different questions.
+**Mitigation:** name the primary endpoint “no recorded dropout by the source observation endpoint” and run Dropout-versus-Graduate sensitivity analysis.
 
-For example:
+## Risk 3 — direct/proxy discrimination
 
-- demographic parity concerns selection/allocation rates
-- TPR/FNR gaps concern unequal missed benefit
-- FPR gaps concern unequal unnecessary intervention
-- calibration concerns whether probability meanings differ across groups
+Removing Gender, Nacionality, International and Educational special needs prevents direct use of those fields, but remaining predictors can still carry correlated information.
 
-These criteria can conflict.
+**Mitigation:** never claim the model is proxy-free; audit outcomes by held-out group attributes and treat causal explanations as unresolved.
 
-Do not optimize one metric and call the system fair.
+## Risk 4 — sparse groups
 
-Document which harm each metric is intended to detect.
+International, special-needs and intersectional populations can be small.
 
-## Small groups and intersectionality
+**Mitigation:** predeclare minimum group size 30. Under-sized groups remain visible but do not enter disparity-gap computation.
 
-Small-group estimates can be unstable.
+## Risk 5 — metric conflict
 
-Intersectional analysis can reveal hidden harms but can also:
+Demographic/selection parity, error-rate parity and calibration can disagree.
 
-- create tiny cells
-- increase re-identification risk
-- produce volatile estimates
+**Mitigation:** report multiple metrics with their underlying group values and avoid composite “fairness scores.”
 
-The current toolkit preserves small-group warnings.
+## Risk 6 — threshold misuse
 
-Real studies should define suppression, aggregation, or uncertainty rules before inspecting results.
+Threshold choice changes both overall errors and subgroup gaps.
 
-## Privacy
+**Mitigation:** treat 0.50 as a reference only and publish threshold sensitivity from 0.30 to 0.70.
 
-A responsible review should examine more than whether privacy was "reviewed."
+## Risk 7 — calibration instability
 
-Relevant evidence may include:
+ECE depends on binning, while calibration can shift across populations.
 
-- data minimization
-- lawful/ethical basis
-- direct and indirect identifiers
-- sensitive attributes
-- retention
-- access controls
-- secondary use
-- de-identification
-- deletion
-- model-output exposure
-- incident response
+**Mitigation:** report Brier score, calibration bins, ECE, calibration slope/intercept, subgroup calibration and empirical reliability figures.
 
-The current `GovernanceReview` requires a documented privacy evidence field rather than accepting a truthy string as approval.
+## Risk 8 — uncertainty understatement
 
-## Accessibility
+A bootstrap over fixed predictions does not capture model-fitting uncertainty.
 
-AI support can appear technically accurate while excluding learners using assistive technology, alternative input methods, different languages, low-bandwidth devices, or non-standard study workflows.
+**Mitigation:** separate conditional holdout bootstrap from a training-refit bootstrap, and add repeated train/test split robustness.
 
-Accessibility review should therefore be documented as evidence, not assumed from general usability testing.
+## Risk 9 — transportability
 
-## Human oversight
+One historical institutional context does not establish contemporary or cross-institution validity.
 
-Human oversight is meaningful only when someone has:
+**Mitigation:** label repeated splits as internal robustness only and require external/temporal validation.
 
-- a defined role
-- enough information to review the output
-- authority to override or stop the system
-- an escalation pathway
-- time and resources to act
+## Risk 10 — intervention harm
 
-The toolkit therefore asks for an oversight owner rather than a bare checkbox.
+Even a predictive score with strong discrimination can produce harmful or ineffective interventions.
 
-## Appeal and contestability
+**Mitigation:** no deployment verdict; require prospective evaluation of the intervention itself.
 
-Affected learners and instructors should have a meaningful route to question or challenge consequential AI-supported decisions.
+## Governance evidence intentionally absent
 
-The current governance model records an appeal path.
+The research run does not manufacture evidence for:
 
-A real deployment should define:
+- privacy impact;
+- accessibility;
+- human-oversight ownership;
+- appeals;
+- rollback;
+- monitoring;
+- external validation.
 
-- who receives appeals
-- expected response time
-- evidence available to the reviewer
-- correction and remediation procedure
-- protection against retaliation or penalty for appealing
+Those absences are recorded as evidence gaps.
 
-## Rollback
+## Bottom line
 
-A responsible system needs a named owner who can suspend or roll back use when monitoring identifies unacceptable harm.
+The responsible output of this study is not “fair” or “safe.”
 
-Do not deploy a system that no one has authority to stop.
-
-## Monitoring
-
-Performance, calibration, subgroup disparities, and educational effects can change after deployment.
-
-Monitoring plans should specify:
-
-- metrics
-- frequency
-- trigger thresholds
-- incident review
-- model/data version
-- responsible owner
-- rollback criteria
-
-## Educational harm
-
-Technically "correct" interventions may still harm learning.
-
-Examples include:
-
-- interrupting productive struggle
-- excessive nudging
-- learner labeling
-- stigmatization
-- dependency
-- reduced teacher agency
-- inequitable allocation of attention
-- surveillance replacing pedagogy
-
-Maintain these harms in the risk register rather than hiding them behind accuracy metrics.
-
-## Decision thresholds
-
-No threshold in this repository should be interpreted as a universal ethical boundary.
-
-Thresholds must be justified for the specific:
-
-- use case
-- population
-- intervention
-- harm severity
-- evidence quality
-- decision owner
-
-Uncertainty should be considered when results are near a threshold.
-
-## Excluded uses
-
-Do not use this prototype alone for:
-
-- grading
-- admissions
-- discipline
-- scholarship selection
-- employment decisions
-- psychological or medical diagnosis
-- disability determination
-- covert surveillance
-- automatic high-stakes deployment approval
-- legal compliance certification
-
-## Before real deployment
-
-Require at minimum:
-
-- intended-use statement
-- affected-population analysis
-- performance and calibration evidence
-- subgroup and intersectional review where appropriate
-- uncertainty analysis
-- threshold sensitivity
-- relevant shift/robustness testing
-- privacy evidence
-- accessibility evidence
-- human oversight owner
-- appeal path
-- rollback authority
-- monitoring plan
-- risk register
-- accountable final decision owner
-
-Passing the toolkit means only that the supplied evidence passed the configured review rules.
+The responsible output is a transparent record of what was measured, how stable it was, what was not measured, and what would still be required before a consequential educational decision.
