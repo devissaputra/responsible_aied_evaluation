@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from numbers import Real
 
 
-DECISIONS = {"PASS", "CONDITIONAL", "BLOCK", "NOT_EVALUABLE"}
+REVIEW_STATUSES = {"MEETS_CONFIGURED_CRITERIA", "CONDITIONAL", "BLOCKED", "NOT_EVALUABLE"}
 RISK_STATUSES = {"open", "mitigated", "accepted"}
 
 
@@ -924,13 +924,13 @@ def risk_register_summary(risks):
     }
 
 
-def responsible_aied_decision(
+def configured_evidence_review(
     records,
     governance,
     risks,
     config,
 ):
-    """Return a transparent study-specific decision report."""
+    """Apply evaluator-supplied evidence criteria without claiming fairness or deployment readiness."""
     _validate_records(records)
     if not isinstance(config, DecisionConfig):
         raise ValueError("config must be a DecisionConfig")
@@ -964,13 +964,17 @@ def responsible_aied_decision(
 
     if fairness["status"] != "scored":
         return {
-            "decision": "NOT_EVALUABLE",
+            "review_status": "NOT_EVALUABLE",
+            "status_meaning": (
+                "Configured comparison criteria cannot be evaluated with the supplied evidence. "
+                "This is not a fairness, legal, or deployment verdict."
+            ),
             "blocking_reasons": [
                 "fairness comparison requires at least two evaluable groups"
             ],
             "warnings": fairness["warnings"],
             "required_mitigations": [
-                "collect or define a valid comparison population before deployment review"
+                "collect or define a valid comparison population before any consequential review"
             ],
             "fairness": fairness,
             "calibration": calibration,
@@ -981,35 +985,30 @@ def responsible_aied_decision(
 
     if calibration["ece"] > config.max_ece:
         blocking_reasons.append(
-            "expected calibration error exceeds the study-specific limit"
+            "expected calibration error exceeds the evaluator-supplied limit"
         )
         mitigations.append(
             "recalibrate or revise the model and repeat calibration evaluation"
         )
     if calibration["brier"] > config.max_brier:
         blocking_reasons.append(
-            "Brier score exceeds the study-specific limit"
+            "Brier score exceeds the evaluator-supplied limit"
         )
         mitigations.append(
             "improve probabilistic performance and re-evaluate"
         )
 
     for metric_name, limit in (
-        (
-            "selection_rate_gap",
-            config.max_selection_rate_gap,
-        ),
+        ("selection_rate_gap", config.max_selection_rate_gap),
         ("tpr_gap", config.max_tpr_gap),
         ("fpr_gap", config.max_fpr_gap),
     ):
         value = fairness[metric_name]
         if value is None:
-            warnings.append(
-                f"{metric_name} is not evaluable for all groups"
-            )
+            warnings.append(f"{metric_name} is not evaluable for all groups")
         elif value > limit:
             blocking_reasons.append(
-                f"{metric_name} exceeds the study-specific limit"
+                f"{metric_name} exceeds the evaluator-supplied limit"
             )
             mitigations.append(
                 f"investigate causes of {metric_name} and evaluate mitigation"
@@ -1022,13 +1021,9 @@ def responsible_aied_decision(
         )
 
     if not governance_result["complete"]:
-        blocking_reasons.append(
-            "required governance evidence is incomplete"
-        )
+        blocking_reasons.append("required governance evidence is incomplete")
         for check in governance_result["failed_checks"]:
-            mitigations.append(
-                f"complete documented {check} evidence"
-            )
+            mitigations.append(f"complete documented {check} evidence")
 
     highest_open = risk_result["highest_open_risk_score"]
     if (
@@ -1036,22 +1031,26 @@ def responsible_aied_decision(
         and highest_open > config.max_open_risk_score
     ):
         blocking_reasons.append(
-            "open risk exceeds the study-specific risk tolerance"
+            "open risk exceeds the evaluator-supplied risk tolerance"
         )
         mitigations.append(
             "mitigate, formally accept, or re-scope the highest open risk"
         )
 
     if blocking_reasons:
-        decision = "BLOCK"
+        review_status = "BLOCKED"
     elif warnings:
-        decision = "CONDITIONAL"
+        review_status = "CONDITIONAL"
     else:
-        decision = "PASS"
+        review_status = "MEETS_CONFIGURED_CRITERIA"
 
-    assert decision in DECISIONS
+    assert review_status in REVIEW_STATUSES
     return {
-        "decision": decision,
+        "review_status": review_status,
+        "status_meaning": (
+            "Result against evaluator-supplied evidence thresholds only; "
+            "not a fairness certificate, legal conclusion, or deployment approval."
+        ),
         "blocking_reasons": sorted(set(blocking_reasons)),
         "warnings": sorted(set(warnings)),
         "required_mitigations": sorted(set(mitigations)),
@@ -1062,25 +1061,3 @@ def responsible_aied_decision(
         "config": config,
     }
 
-
-# Backward-compatible legacy gate. New work should use
-# responsible_aied_decision() with an explicit DecisionConfig.
-def deployment_gate(
-    ece,
-    fairness_gap,
-    privacy_reviewed,
-    human_oversight,
-):
-    ece = _unit_interval(ece, "ece")
-    fairness_gap = _unit_interval(
-        fairness_gap,
-        "fairness_gap",
-    )
-    _bool(privacy_reviewed, "privacy_reviewed")
-    _bool(human_oversight, "human_oversight")
-    return (
-        ece <= 0.10
-        and fairness_gap <= 0.10
-        and privacy_reviewed
-        and human_oversight
-    )
