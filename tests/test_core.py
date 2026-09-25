@@ -200,6 +200,30 @@ class CoreTests(unittest.TestCase):
         self.assertEqual(report["status"], "scored")
         self.assertEqual(len(report["groups"]), 4)
 
+    def test_small_groups_are_excluded_from_disparity_gaps(self):
+        rows = records() + [
+            core.EvaluationRecord("C1", 0.95, 1, "C"),
+        ]
+        report = core.fairness_report(
+            rows,
+            min_group_size=4,
+        )
+        self.assertEqual(report["status"], "scored")
+        self.assertNotIn("C", report["evaluable_groups"])
+        self.assertFalse(report["groups"]["C"]["evaluable"])
+
+    def test_stratified_bootstrap_preserves_group_evidence(self):
+        result = core.bootstrap_interval(
+            records(),
+            "selection_rate_gap",
+            n_resamples=50,
+            seed=3,
+            min_group_size=4,
+            stratify_by_group=True,
+        )
+        self.assertEqual(result["status"], "scored")
+        self.assertEqual(result["resampling"], "group-stratified")
+
     def test_group_calibration(self):
         report = core.group_calibration_report(
             records(),
@@ -419,7 +443,7 @@ class CoreTests(unittest.TestCase):
         )
         self.assertEqual(report["decision"], "BLOCK")
 
-    def test_decision_conditional_for_small_groups(self):
+    def test_decision_not_evaluable_for_small_groups(self):
         report = core.responsible_aied_decision(
             records(),
             governance(),
@@ -428,7 +452,7 @@ class CoreTests(unittest.TestCase):
         )
         self.assertEqual(
             report["decision"],
-            "CONDITIONAL",
+            "NOT_EVALUABLE",
         )
 
     def test_decision_not_evaluable_with_one_group(self):
