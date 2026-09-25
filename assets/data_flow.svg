@@ -1,45 +1,48 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="480" viewBox="0 0 1200 480" role="img" aria-labelledby="title desc">
-<title id="title">Responsible AIED Evaluation Toolkit data flow</title>
-<desc id="desc">Prediction probabilities and outcomes are converted to performance, calibration, fairness, uncertainty, and shift evidence, then combined with governance and risk records in a transparent decision report.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440" role="img" aria-labelledby="title desc">
+<title id="title">Responsible AIED evidence flow</title>
+<desc id="desc">The flow separates enrollment-time predictors, audit-only protected fields, model outputs, subgroup evaluation, robustness evidence, and deployment-governance gaps.</desc>
 <defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#52656D"/></marker></defs>
 <rect width="100%" height="100%" fill="#FAFBFA"/>
-<text x="60" y="64" font-family="Arial,sans-serif" font-size="30" font-weight="700" fill="#1B2430">Responsible AIED Evaluation Toolkit · data and reasoning flow</text>
-<text x="60" y="98" font-family="Arial,sans-serif" font-size="17" fill="#5B6660">The decision report preserves failed checks, warnings, and required mitigations.</text>
+<text x="55" y="58" font-family="Arial" font-size="28" font-weight="700" fill="#1B2430">Responsible AIED evidence flow</text>
+<text x="55" y="91" font-family="Arial" font-size="16" fill="#5B6660">Direct audit attributes are separated from prediction before the train/test split.</text>
 
-<rect x="55" y="145" width="220" height="145" rx="18" fill="#E8F1F3" stroke="#87949A" stroke-width="2"/>
-<text x="165" y="179" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#1B2430">Model evidence</text>
-<text x="165" y="208" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">probabilities · outcomes</text>
-<text x="165" y="229" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">groups · intersections</text>
-<text x="165" y="250" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">baseline / shift scenario</text>
+<rect x="40" y="138" width="205" height="145" rx="18" fill="#E8F1F3" stroke="#87949A" stroke-width="2"/>
+<text x="142" y="172" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#1B2430">Source data</text>
+<text x="142" y="199" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">enrollment variables</text>
+<text x="142" y="221" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">semester variables</text>
+<text x="142" y="243" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">audit attributes</text>
+<text x="142" y="265" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">3-state target</text>
 
-<line x1="280" y1="217" x2="330" y2="217" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="255" y1="210" x2="300" y2="210" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
 
-<rect x="345" y="125" width="230" height="185" rx="18" fill="#EEF3E8" stroke="#87949A" stroke-width="2"/>
-<text x="460" y="159" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#1B2430">Quantitative review</text>
-<text x="460" y="188" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">performance · calibration</text>
-<text x="460" y="209" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">selection / TPR / FPR gaps</text>
-<text x="460" y="230" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">bootstrap uncertainty</text>
-<text x="460" y="251" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">threshold + shift sensitivity</text>
+<rect x="310" y="126" width="230" height="169" rx="18" fill="#EEF3E8" stroke="#87949A" stroke-width="2"/>
+<text x="425" y="160" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#1B2430">Design separation</text>
+<text x="425" y="187" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">drop semester fields</text>
+<text x="425" y="209" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">hold out gender / nationality</text>
+<text x="425" y="231" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">hold out international / SEN</text>
+<text x="425" y="253" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">freeze binary endpoint</text>
+<text x="425" y="275" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">retain audit labels separately</text>
 
-<line x1="580" y1="217" x2="630" y2="217" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="550" y1="210" x2="595" y2="210" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
 
-<rect x="645" y="125" width="230" height="185" rx="18" fill="#F5EDE4" stroke="#87949A" stroke-width="2"/>
-<text x="760" y="159" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#1B2430">Governance evidence</text>
-<text x="760" y="188" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">privacy · accessibility</text>
-<text x="760" y="209" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">oversight · appeal</text>
-<text x="760" y="230" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">rollback · monitoring</text>
-<text x="760" y="251" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">risk owners + mitigations</text>
+<rect x="605" y="126" width="230" height="169" rx="18" fill="#F5EDE4" stroke="#87949A" stroke-width="2"/>
+<text x="720" y="160" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#1B2430">Model evidence</text>
+<text x="720" y="187" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">logistic probability model</text>
+<text x="720" y="209" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">discrimination + PR</text>
+<text x="720" y="231" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">calibration</text>
+<text x="720" y="253" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">group error/allocation metrics</text>
+<text x="720" y="275" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">threshold sensitivity</text>
 
-<line x1="880" y1="217" x2="930" y2="217" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
+<line x1="845" y1="210" x2="890" y2="210" stroke="#52656D" stroke-width="3" marker-end="url(#arrow)"/>
 
-<rect x="945" y="125" width="210" height="185" rx="18" fill="#ECE8F5" stroke="#87949A" stroke-width="2"/>
-<text x="1050" y="159" text-anchor="middle" font-family="Arial" font-size="17" font-weight="700" fill="#1B2430">Review outcome</text>
-<text x="1050" y="188" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">study-specific thresholds</text>
-<text x="1050" y="209" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">blocking reasons</text>
-<text x="1050" y="230" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">warnings</text>
-<text x="1050" y="251" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">required mitigations</text>
+<rect x="900" y="112" width="255" height="197" rx="18" fill="#ECE8F5" stroke="#87949A" stroke-width="2"/>
+<text x="1027" y="146" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#1B2430">Research interpretation</text>
+<text x="1027" y="173" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">bootstrap uncertainty</text>
+<text x="1027" y="195" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">repeated-split robustness</text>
+<text x="1027" y="217" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">target sensitivity</text>
+<text x="1027" y="239" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">small-group warnings</text>
+<text x="1027" y="261" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">governance evidence gaps</text>
+<text x="1027" y="283" text-anchor="middle" font-family="Arial" font-size="13" fill="#26343B">no fairness/deployment certificate</text>
 
-<rect x="55" y="355" width="1100" height="70" rx="16" fill="#FFF7EC" stroke="#D4B27C"/>
-<text x="75" y="383" font-family="Arial" font-size="15" font-weight="700" fill="#6F5427">Interpretation boundary</text>
-<text x="75" y="407" font-family="Arial" font-size="14" fill="#6F5427">A PASS means the supplied evidence passed the configured rules; it is not a universal ethics, fairness, legal, or safety certificate.</text>
+<text x="55" y="365" font-family="Arial" font-size="14" fill="#5B6660">Audit-only attributes remain available for evaluation but never enter the predictive feature matrix.</text>
 </svg>
