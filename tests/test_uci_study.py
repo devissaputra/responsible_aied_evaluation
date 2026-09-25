@@ -105,6 +105,37 @@ class UCIStudyAdapterTests(unittest.TestCase):
         self.assertEqual(result["fairness_metrics"]["status"], "not_evaluable")
         self.assertIsNone(result["fairness_metrics"]["selection_rate_gap"])
 
+    def test_intersectional_audit_requires_complete_group_coverage(self):
+        n = 70
+        indices = np.arange(n)
+        probability = np.linspace(0.05, 0.95, n)
+        outcome = np.array(([0, 1] * 35), dtype=int)
+        audit = pd.DataFrame(
+            {
+                "gender_x_international": (
+                    ["female__domestic"] * 35
+                    + ["male__domestic"] * 30
+                    + ["female__international"] * 3
+                    + ["male__international"] * 2
+                )
+            }
+        )
+        result = study.intersectional_audit(
+            indices,
+            probability,
+            outcome,
+            audit,
+            include_bootstrap=False,
+        )
+        self.assertFalse(result["coverage"]["complete"])
+        self.assertEqual(
+            result["fairness_metrics"]["status"],
+            "not_evaluable",
+        )
+        self.assertIsNone(
+            result["fairness_metrics"]["selection_rate_gap"]
+        )
+
     def test_governance_context_produces_no_deployment_verdict(self):
         result = study.governance_and_risk_context()
         self.assertFalse(result["deployment_review_executed"])
