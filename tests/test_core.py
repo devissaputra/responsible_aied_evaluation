@@ -392,8 +392,8 @@ class CoreTests(unittest.TestCase):
                 max_open_risk_score=12,
             )
 
-    def test_decision_passes_complete_low_risk_case(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_passes_complete_low_risk_case(self):
+        report = core.configured_evidence_review(
             records(),
             governance(),
             [
@@ -408,16 +408,16 @@ class CoreTests(unittest.TestCase):
             ],
             config(),
         )
-        self.assertEqual(report["decision"], "PASS")
+        self.assertEqual(report["review_status"], "MEETS_CONFIGURED_CRITERIA")
 
-    def test_decision_blocks_missing_governance(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_blocks_missing_governance(self):
+        report = core.configured_evidence_review(
             records(),
             governance(rollback_owner=None),
             [],
             config(),
         )
-        self.assertEqual(report["decision"], "BLOCK")
+        self.assertEqual(report["review_status"], "BLOCKED")
         self.assertTrue(
             any(
                 "governance" in reason
@@ -425,8 +425,8 @@ class CoreTests(unittest.TestCase):
             )
         )
 
-    def test_decision_blocks_high_open_risk(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_blocks_high_open_risk(self):
+        report = core.configured_evidence_review(
             records(),
             governance(),
             [
@@ -441,59 +441,40 @@ class CoreTests(unittest.TestCase):
             ],
             config(),
         )
-        self.assertEqual(report["decision"], "BLOCK")
+        self.assertEqual(report["review_status"], "BLOCKED")
 
-    def test_decision_not_evaluable_for_small_groups(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_not_evaluable_for_small_groups(self):
+        report = core.configured_evidence_review(
             records(),
             governance(),
             [],
             config(min_group_size=5),
         )
         self.assertEqual(
-            report["decision"],
+            report["review_status"],
             "NOT_EVALUABLE",
         )
 
-    def test_decision_not_evaluable_with_one_group(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_not_evaluable_with_one_group(self):
+        report = core.configured_evidence_review(
             records()[:4],
             governance(),
             [],
             config(min_group_size=1),
         )
         self.assertEqual(
-            report["decision"],
+            report["review_status"],
             "NOT_EVALUABLE",
         )
 
-    def test_decision_blocks_metric_violation(self):
-        report = core.responsible_aied_decision(
+    def test_configured_review_blocks_metric_violation(self):
+        report = core.configured_evidence_review(
             records(),
             governance(),
             [],
             config(max_selection_rate_gap=0.0),
         )
-        self.assertEqual(report["decision"], "BLOCK")
-
-    def test_legacy_gate_requires_real_booleans(self):
-        with self.assertRaises(ValueError):
-            core.deployment_gate(
-                0.05,
-                0.05,
-                "privacy failed",
-                "no oversight",
-            )
-
-    def test_legacy_gate_still_works_for_boolean_inputs(self):
-        self.assertTrue(
-            core.deployment_gate(
-                0.05,
-                0.05,
-                True,
-                True,
-            )
-        )
+        self.assertEqual(report["review_status"], "BLOCKED")
 
 
 if __name__ == "__main__":
