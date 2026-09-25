@@ -33,8 +33,8 @@
   },
   "overall": {
     "roc_auc": 0.8318354385882684,
-    "brier": 0.14432242291961148,
-    "ece_10": 0.031663205234106005,
+    "brier": 0.1443224228759227,
+    "ece_10": 0.03166320511955012,
     "confusion": {
       "n": 885,
       "tp": 152,
@@ -67,7 +67,8 @@
         "specificity_tnr": 0.9248826291079812,
         "fpr": 0.07511737089201878,
         "fnr": 0.45652173913043476,
-        "selection_rate": 0.18971631205673758
+        "selection_rate": 0.18971631205673758,
+        "evaluable": true
       },
       "gender_code_1": {
         "n": 321,
@@ -81,9 +82,15 @@
         "specificity_tnr": 0.9028571428571428,
         "fpr": 0.09714285714285714,
         "fnr": 0.4726027397260274,
-        "selection_rate": 0.29283489096573206
+        "selection_rate": 0.29283489096573206,
+        "evaluable": true
       }
     },
+    "evaluable_groups": [
+      "gender_code_0",
+      "gender_code_1"
+    ],
+    "min_group_size": 30,
     "warnings": [],
     "selection_rate_gap": 0.10311857890899448,
     "tpr_gap": 0.016081000595592587,
@@ -100,111 +107,118 @@
     "groups": {
       "gender_code_0": {
         "n": 564,
-        "ece": 0.04521707547483112,
-        "brier": 0.12632503749430526,
+        "evaluable": true,
+        "ece": 0.04521707504962913,
+        "brier": 0.12632503743875947,
         "bins": [
           {
             "bin": 0,
             "lower": 0.0,
             "upper": 0.2,
             "count": 297,
-            "mean_probability": 0.10186303845464743,
+            "mean_probability": 0.10186303831839967,
             "outcome_rate": 0.08754208754208755,
-            "absolute_gap": 0.014320950912559888
+            "absolute_gap": 0.014320950776312125
           },
           {
             "bin": 1,
             "lower": 0.2,
             "upper": 0.4,
             "count": 126,
-            "mean_probability": 0.28840709306998574,
+            "mean_probability": 0.288407092014812,
             "outcome_rate": 0.20634920634920634,
-            "absolute_gap": 0.0820578867207794
+            "absolute_gap": 0.08205788566560568
           },
           {
             "bin": 2,
             "lower": 0.4,
             "upper": 0.6,
             "count": 59,
-            "mean_probability": 0.4850514715273652,
+            "mean_probability": 0.4850514713621688,
             "outcome_rate": 0.3389830508474576,
-            "absolute_gap": 0.1460684206799076
+            "absolute_gap": 0.1460684205147112
           },
           {
             "bin": 3,
             "lower": 0.6,
             "upper": 0.8,
             "count": 30,
-            "mean_probability": 0.7010997550577607,
+            "mean_probability": 0.701099753807483,
             "outcome_rate": 0.6666666666666666,
-            "absolute_gap": 0.03443308839109405
+            "absolute_gap": 0.03443308714081639
           },
           {
             "bin": 4,
             "lower": 0.8,
             "upper": 1.0,
             "count": 52,
-            "mean_probability": 0.9088227874636325,
+            "mean_probability": 0.9088227870955261,
             "outcome_rate": 0.8846153846153846,
-            "absolute_gap": 0.02420740284824796
+            "absolute_gap": 0.024207402480141527
           }
         ]
       },
       "gender_code_1": {
         "n": 321,
-        "ece": 0.060422179631625494,
-        "brier": 0.17594399731173818,
+        "evaluable": true,
+        "ece": 0.06042218025382414,
+        "brier": 0.17594399728888266,
         "bins": [
           {
             "bin": 0,
             "lower": 0.0,
             "upper": 0.2,
             "count": 101,
-            "mean_probability": 0.11448451503907278,
+            "mean_probability": 0.11448451503092666,
             "outcome_rate": 0.1485148514851485,
-            "absolute_gap": 0.034030336446075726
+            "absolute_gap": 0.03403033645422185
           },
           {
             "bin": 1,
             "lower": 0.2,
             "upper": 0.4,
             "count": 100,
-            "mean_probability": 0.2854485582519402,
+            "mean_probability": 0.285448558191828,
             "outcome_rate": 0.39,
-            "absolute_gap": 0.1045514417480598
+            "absolute_gap": 0.104551441808172
           },
           {
             "bin": 2,
             "lower": 0.4,
             "upper": 0.6,
             "count": 43,
-            "mean_probability": 0.48332851384986747,
+            "mean_probability": 0.4833285122152363,
             "outcome_rate": 0.5348837209302325,
-            "absolute_gap": 0.05155520708036504
+            "absolute_gap": 0.05155520871499619
           },
           {
             "bin": 3,
             "lower": 0.6,
             "upper": 0.8,
             "count": 24,
-            "mean_probability": 0.6992506268309708,
+            "mean_probability": 0.6992506238395446,
             "outcome_rate": 0.7916666666666666,
-            "absolute_gap": 0.0924160398356958
+            "absolute_gap": 0.09241604282712201
           },
           {
             "bin": 4,
             "lower": 0.8,
             "upper": 1.0,
             "count": 53,
-            "mean_probability": 0.9232367425400045,
+            "mean_probability": 0.9232367415813552,
             "outcome_rate": 0.9433962264150944,
-            "absolute_gap": 0.020159483875089812
+            "absolute_gap": 0.020159484833739194
           }
         ]
       }
     },
-    "ece_gap": 0.015205104156794373,
-    "brier_gap": 0.04961895981743292,
+    "evaluable_groups": [
+      "gender_code_0",
+      "gender_code_1"
+    ],
+    "min_group_size": 30,
+    "ece_gap": 0.015205105204195012,
+    "brier_gap": 0.049618959850123184,
     "warnings": []
   },
   "threshold_sensitivity": [
@@ -261,7 +275,9 @@
       "point": 0.7954802259887006,
       "lower": 0.768361581920904,
       "upper": 0.8225988700564971,
-      "resamples_used": 1000
+      "resamples_used": 1000,
+      "min_group_size": 1,
+      "resampling": "iid"
     },
     "selection_rate_gap": {
       "status": "scored",
@@ -269,7 +285,9 @@
       "point": 0.10311857890899448,
       "lower": 0.04236421499629414,
       "upper": 0.16407780536688457,
-      "resamples_used": 1000
+      "resamples_used": 1000,
+      "min_group_size": 1,
+      "resampling": "iid"
     },
     "tpr_gap": {
       "status": "scored",
@@ -277,7 +295,9 @@
       "point": 0.016081000595592587,
       "lower": 0.0023846430464078126,
       "upper": 0.137040752676776,
-      "resamples_used": 1000
+      "resamples_used": 1000,
+      "min_group_size": 1,
+      "resampling": "iid"
     },
     "fpr_gap": {
       "status": "scored",
@@ -285,7 +305,9 @@
       "point": 0.02202548625083836,
       "lower": 0.0009611117945683871,
       "upper": 0.07140880766206126,
-      "resamples_used": 1000
+      "resamples_used": 1000,
+      "min_group_size": 1,
+      "resampling": "iid"
     }
   },
   "interpretation_boundary": "measurement audit only; not fairness certification or deployment approval"
