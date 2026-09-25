@@ -1,10 +1,25 @@
-# Visual assets
+# Research Bundle Visuals
 
-All SVG files in this folder are original repository diagrams.
+This directory contains explanatory study-design diagrams.
 
-- `architecture.svg` shows the implemented evidence-to-decision architecture.
-- `data_flow.svg` separates technical metrics, uncertainty, educational risk, governance evidence, and review decisions.
-- `demo_snapshot.svg` summarizes the synthetic paths exercised by the demo without presenting empirical performance claims.
-- `evaluation_dashboard.svg` is an evaluation checklist, not a performance chart.
+## Explanatory diagrams
 
-The visuals intentionally avoid invented scores or decorative result bars.
+- `architecture.svg` — frozen responsible-AIED empirical architecture;
+- `data_flow.svg` — separation of prediction, audit, uncertainty and governance evidence.
+
+These SVG files explain the research protocol and contain no invented empirical scores.
+
+## Generated empirical figures
+
+The real-data workflow writes authoritative figures to `results/figures/`:
+
+- `roc_curve.png`;
+- `precision_recall_curve.png`;
+- `overall_calibration.png`;
+- `gender_calibration.png`;
+- `international_calibration.png`;
+- `gender_threshold_sensitivity.png`;
+- `international_threshold_sensitivity.png`;
+- `repeated_split_robustness.png`.
+
+Generated figures come directly from the UCI 697 empirical run.
