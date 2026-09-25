@@ -301,9 +301,66 @@ def intersectional_audit(
         probability,
         outcome,
         labels,
-        include_bootstrap=include_bootstrap,
+        include_bootstrap=False,
     )
     result["definition"] = "gender x international-status intersection"
+
+    fairness = result["fairness_metrics"]
+    observed_groups = sorted(fairness["groups"])
+    evaluable_groups = sorted(fairness["evaluable_groups"])
+    result["coverage"] = {
+        "observed_groups": observed_groups,
+        "evaluable_groups": evaluable_groups,
+        "complete": observed_groups == evaluable_groups,
+    }
+
+    if observed_groups != evaluable_groups:
+        fairness["status"] = "not_evaluable"
+        fairness["reason"] = "incomplete_intersectional_coverage"
+        for metric in [
+            "selection_rate_gap",
+            "tpr_gap",
+            "fpr_gap",
+            "fnr_gap",
+            "accuracy_gap",
+            "precision_gap",
+            "equalized_odds_gap",
+        ]:
+            fairness[metric] = None
+
+        calibration = result["calibration"]
+        calibration["status"] = "not_evaluable"
+        calibration["reason"] = "incomplete_intersectional_coverage"
+        calibration["ece_gap"] = None
+        calibration["brier_gap"] = None
+
+        for row in result["threshold_sensitivity"]:
+            row["selection_rate_gap"] = None
+            row["tpr_gap"] = None
+            row["fpr_gap"] = None
+            row["fairness_status"] = "not_evaluable"
+
+        result["interpretation"] = (
+            "At least one observed gender x international intersection is below "
+            f"min_group_size={MIN_GROUP_SIZE}; cell-level metrics are retained but "
+            "no overall intersectional disparity gap is scored."
+        )
+        return result
+
+    if include_bootstrap:
+        records = make_records(indices, probability, outcome, labels)
+        result["conditional_holdout_bootstrap"] = {
+            metric: bootstrap_interval(
+                records,
+                metric,
+                threshold=0.5,
+                n_resamples=HOLDOUT_BOOTSTRAP_ITERATIONS,
+                seed=SEED,
+                min_group_size=MIN_GROUP_SIZE,
+                stratify_by_group=True,
+            )
+            for metric in ["selection_rate_gap", "tpr_gap", "fpr_gap"]
+        }
     return result
 
 def evaluate_split(
