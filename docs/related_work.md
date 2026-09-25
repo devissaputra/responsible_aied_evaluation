@@ -1,137 +1,129 @@
-# Related work and governance context
+# Related Work and Governance Context
 
-Responsible AIED Evaluation Toolkit is an original implementation.
+This repository combines empirical educational-model auditing with explicit governance boundaries. It does not claim compliance with any framework.
 
-It does not reproduce or claim compliance with the frameworks below.
+## Source dataset and educational prediction
 
-## NIST AI Risk Management Framework
+Realinho, V., Machado, J., Baptista, L., & Martins, M. V. (2022). *Predicting Student Dropout and Academic Success*. Data, 7(11), 146. https://doi.org/10.3390/data7110146
 
-NIST AI RMF 1.0 provides a voluntary, rights-preserving and use-case-agnostic framework for managing AI risks.
+The data descriptor documents enrollment information, first/second-semester performance variables and the three-state endpoint used in this bundle.
 
-It organizes risk-management activity around:
+UCI dataset record: https://doi.org/10.24432/C5MC89
 
-- Govern
-- Map
-- Measure
-- Manage
+## Model documentation
+
+Mitchell et al. introduced model cards as structured documentation for intended use, performance characteristics and limitations.
+
+- Mitchell, M. et al. (2019). Model Cards for Model Reporting. FAT* 2019. https://doi.org/10.1145/3287560.3287596
+
+Gebru et al. proposed datasheets for datasets to make provenance, composition, collection and recommended uses more explicit.
+
+- Gebru, T. et al. (2021). Datasheets for Datasets. Communications of the ACM, 64(12), 86–92. https://doi.org/10.1145/3458723
+
+The repository's dataset and analysis cards draw on that documentation tradition.
+
+## Fairness metrics
+
+Group fairness criteria measure different statistical properties and can be mutually incompatible in realistic settings.
+
+This bundle therefore reports underlying group values plus multiple gaps rather than reducing fairness to one number.
+
+Implemented empirical diagnostics include:
+
+- selection-rate difference;
+- TPR/FNR difference;
+- FPR difference;
+- accuracy difference;
+- precision difference;
+- equalized-odds-style maximum of TPR/FPR gaps;
+- group calibration;
+- threshold sensitivity;
+- minimum-group-size safeguards.
+
+These are descriptive measurements, not ethical conclusions.
+
+## Calibration
+
+Probability calibration matters because a risk score can be used differently from a hard classification.
+
+The bundle reports:
+
+- Brier score;
+- ECE;
+- reliability bins;
+- calibration intercept;
+- calibration slope;
+- subgroup calibration.
+
+ECE is retained as one diagnostic while its dependence on binning is explicitly acknowledged.
+
+## NIST AI RMF
+
+NIST AI RMF 1.0 is a voluntary, rights-preserving, use-case-agnostic framework organized around:
+
+- Govern;
+- Map;
+- Measure;
+- Manage.
 
 Reference:
 
-- Tabassi, E. (2023).
-- *Artificial Intelligence Risk Management Framework (AI RMF 1.0).*
-- NIST AI 100-1.
-- https://doi.org/10.6028/NIST.AI.100-1
-- https://www.nist.gov/itl/ai-risk-management-framework
+Tabassi, E. (2023). *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1. https://doi.org/10.6028/NIST.AI.100-1
 
-This repository reflects the same broad idea that measurement is only one part of responsible AI.
+This research bundle is most directly concerned with measurement and with making missing governance evidence visible. It is not a NIST compliance implementation.
 
-The toolkit additionally requires governance evidence, a risk register, monitoring, and rollback ownership.
+## UNESCO AI ethics
 
-NIST AI RMF 1.0 is evolving; this repository should not be described as a NIST compliance implementation.
-
-## UNESCO Recommendation on the Ethics of Artificial Intelligence
-
-UNESCO's Recommendation emphasizes human rights and dignity and includes principles such as:
-
-- fairness and non-discrimination
-- transparency and explainability
-- human oversight
-- data governance
-- inclusion
+UNESCO's 2021 Recommendation on the Ethics of Artificial Intelligence emphasizes human rights, fairness/non-discrimination, transparency, human oversight, data governance and inclusion.
 
 Reference:
 
-- UNESCO. *Recommendation on the Ethics of Artificial Intelligence.*
-- Adopted 2021.
-- https://www.unesco.org/en/artificial-intelligence/recommendation-ethics
+UNESCO. *Recommendation on the Ethics of Artificial Intelligence* (2021).
 
-The current repository does not operationalize the full Recommendation.
+The repository uses those concerns as governance context rather than claiming formal conformance.
 
-It uses these principles as governance context for educational AI review.
+## Educational responsible-AI boundary
 
-## UNESCO guidance for generative AI in education and research
+Prediction quality does not establish beneficial educational intervention.
 
-UNESCO's education-specific guidance advocates a human-centred approach and highlights privacy, ethical validation, pedagogical design, and institutional preparedness.
+For this reason, the real-data study deliberately separates:
 
-Reference:
+- model measurement;
+- uncertainty;
+- subgroup evidence;
+- governance evidence gaps;
+- intervention claims.
 
-- Miao, F., & Holmes, W. (2023).
-- *Guidance for generative AI in education and research.*
-- UNESCO.
-- https://www.unesco.org/en/articles/guidance-generative-ai-education-and-research
-
-The present toolkit applies beyond generative AI, but the emphasis on educational purpose, privacy, human agency, and validation is directly relevant.
-
-## Model and dataset documentation
-
-Responsible evaluation also depends on documentation that explains intended use, limitations, data sources, and affected populations.
-
-Relevant traditions include:
-
-- model cards for reporting model purpose, performance, and limitations
-- datasheets for documenting dataset provenance, composition, collection, and uses
-
-The repository's system card and data documentation are intentionally aligned with that broader documentation practice.
-
-## Technical fairness and calibration
-
-The toolkit implements transparent binary-classification and probability-evaluation metrics rather than depending on an external fairness library.
-
-Implemented quantitative components include:
-
-- confusion-matrix metrics
-- demographic/selection-rate gap
-- TPR/FNR gaps
-- FPR gap
-- equalized-odds-style maximum gap
-- accuracy and precision gaps
-- calibration bins
-- ECE
-- maximum calibration error
-- Brier score
-- group calibration
-- bootstrap intervals
-- threshold sensitivity
-- baseline-versus-shift comparison
-
-These metrics are diagnostics.
-
-They do not by themselves determine what fairness means for a specific educational use.
-
-## Current scope
+## Current implemented empirical scope
 
 Implemented:
 
-- overall performance
-- subgroup performance
-- intersectional grouping
-- multiple disparity metrics
-- calibration tables
-- Brier score
-- subgroup calibration
-- bootstrap uncertainty
-- threshold sensitivity
-- scenario-shift comparison
-- structured governance evidence
-- accessibility review evidence
-- appeal path
-- rollback owner
-- monitoring plan
-- educational risk register
-- PASS / CONDITIONAL / BLOCK / NOT_EVALUABLE reports
+- real UCI educational data;
+- frozen enrollment-time boundary;
+- protected/audit-only feature separation;
+- semantic group labels;
+- subgroup and intersectional audits;
+- small-group non-evaluability;
+- discrimination and PR metrics;
+- probability calibration;
+- threshold sensitivity;
+- conditional holdout bootstrap;
+- training-refit bootstrap;
+- repeated-split robustness;
+- target-definition sensitivity;
+- empirical figures;
+- governance-evidence gap record;
+- educational risk register.
 
 Not implemented:
 
-- legal compliance checking
-- differential privacy
-- privacy attack testing
-- adversarial robustness
-- causal fairness
-- counterfactual fairness
-- automatic accessibility testing
-- automated explainability scoring
-- environmental impact accounting
-- production incident-management integration
-- real learner or instructor study
+- causal effect estimation;
+- counterfactual fairness;
+- privacy attack testing;
+- differential privacy;
+- production monitoring;
+- institution-external validation;
+- prospective learner intervention trial;
+- legal compliance determination.
 
-The toolkit is best understood as an auditable evaluation baseline that makes missing evidence visible.
+Those absences define the boundary of the research claims.
