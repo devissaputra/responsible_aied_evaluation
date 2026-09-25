@@ -4,12 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "responsible-aied-evaluation"
-version = "0.2.0"
-description = "Responsible AI in education evaluation toolkit for performance, calibration, subgroup fairness, uncertainty, robustness, governance, and risk review."
+version = "0.3.0"
+description = "Responsible AI in Education research bundle for enrollment-time dropout-risk auditing, calibration, subgroup evidence, robustness, and governance boundaries."
 requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Devis Wawan Saputra"}]
 readme = "README.md"
+dependencies = [
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<3",
+  "scikit-learn>=1.5,<2",
+  "ucimlrepo>=0.0.7,<1",
+  "matplotlib>=3.8,<4",
+]
 keywords = [
   "responsible-ai",
   "ai-in-education",
