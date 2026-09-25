@@ -182,7 +182,13 @@ def calibration_slope_intercept(probability: np.ndarray, outcome: np.ndarray) ->
     }
 
 
-def overall_metrics(probability: np.ndarray, outcome: np.ndarray, threshold: float = 0.5) -> dict:
+def overall_metrics(
+    probability: np.ndarray,
+    outcome: np.ndarray,
+    threshold: float = 0.5,
+    *,
+    include_sample_bootstrap: bool = False,
+) -> dict:
     y = np.asarray(outcome, dtype=int)
     p = np.asarray(probability, dtype=float)
     prediction = (p >= threshold).astype(int)
@@ -190,7 +196,7 @@ def overall_metrics(probability: np.ndarray, outcome: np.ndarray, threshold: flo
         EvaluationRecord(str(i), float(prob), int(label), "all")
         for i, (prob, label) in enumerate(zip(p, y))
     ]
-    return {
+    result = {
         "prevalence": float(np.mean(y)),
         "roc_auc": float(roc_auc_score(y, p)),
         "average_precision": float(average_precision_score(y, p)),
@@ -202,7 +208,9 @@ def overall_metrics(probability: np.ndarray, outcome: np.ndarray, threshold: flo
         "confusion_at_0_50": confusion_metrics(prediction.tolist(), y.tolist()),
         "reference_threshold": 0.5,
         "threshold_note": "0.50 is a descriptive reference threshold, not an optimized or ethically preferred intervention threshold.",
-        "sample_bootstrap": {
+    }
+    if include_sample_bootstrap:
+        result["sample_bootstrap"] = {
             metric: bootstrap_interval(
                 records,
                 metric,
@@ -211,8 +219,8 @@ def overall_metrics(probability: np.ndarray, outcome: np.ndarray, threshold: flo
                 seed=SEED,
             )
             for metric in ["accuracy", "brier", "ece"]
-        },
-    }
+        }
+    return result
 
 
 def make_records(
@@ -296,6 +304,7 @@ def evaluate_split(
     seed: int,
     *,
     detailed: bool = False,
+    include_sample_bootstrap: bool = False,
 ) -> dict:
     indices = np.arange(len(model_X))
     train_idx, test_idx = train_test_split(
@@ -313,7 +322,11 @@ def evaluate_split(
         "seed": int(seed),
         "n_train": int(len(train_idx)),
         "n_test": int(len(test_idx)),
-        "overall": overall_metrics(probability, y_test),
+        "overall": overall_metrics(
+            probability,
+            y_test,
+            include_sample_bootstrap=include_sample_bootstrap,
+        ),
     }
     if detailed:
         out.update(
@@ -419,7 +432,7 @@ def training_refit_bootstrap(
         model = build_model(model_X.iloc[sampled])
         model.fit(model_X.iloc[sampled], y.iloc[sampled])
         probability = model.predict_proba(model_X.iloc[test_idx])[:, 1]
-        metrics = overall_metrics(probability, y_test)
+        metrics = overall_metrics(probability, y_test, include_sample_bootstrap=False)
 
         row = {
             "roc_auc": metrics["roc_auc"],
@@ -477,7 +490,14 @@ def target_sensitivity(
     audit_sub = audit_frame.loc[mask].reset_index(drop=True)
     y_sub = (labels.loc[mask].reset_index(drop=True) == "Dropout").astype(int)
     model_X, forbidden, audit_only = enrollment_feature_frame(X_sub)
-    split = evaluate_split(model_X, y_sub, audit_sub, SEED, detailed=True)
+    split = evaluate_split(
+        model_X,
+        y_sub,
+        audit_sub,
+        SEED,
+        detailed=True,
+        include_sample_bootstrap=True,
+    )
     return {
         "definition": "Dropout versus Graduate only; Enrolled cases excluded as unresolved endpoint sensitivity.",
         "n": int(len(X_sub)),
@@ -734,7 +754,14 @@ def main() -> None:
     audit_frame = build_audit_frame(X)
     model_X, forbidden, audit_only = enrollment_feature_frame(X)
 
-    primary = evaluate_split(model_X, y, audit_frame, SEED, detailed=True)
+    primary = evaluate_split(
+        model_X,
+        y,
+        audit_frame,
+        SEED,
+        detailed=True,
+        include_sample_bootstrap=True,
+    )
     repeated = repeated_split_robustness(model_X, y, audit_frame)
     refit = training_refit_bootstrap(
         model_X,
