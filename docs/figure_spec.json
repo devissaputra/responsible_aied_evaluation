@@ -1,0 +1,50 @@
+{
+  "question": "How should a dropout predictor be audited before use?",
+  "data": "UCI 697: 4,424 historical student records; 20 retained predictors.",
+  "method": "Exclude post-enrollment and audit-only fields; train/test evaluation, calibration, subgroup support checks and threshold sensitivity.",
+  "formula": "Brier = mean((p-y)^2); selection gap = max(group rates)-min(group rates).",
+  "interpretation": "No recorded dropout includes enrolled and graduated cases; it is not synonymous with success. Group rates need adequate positive and negative support. An unevaluable group must not be represented as having zero disparity.",
+  "status": "RECORDED EXTERNAL-DATA STUDY | full experiment not rerun in this review",
+  "source": "results/uci697_audit.json",
+  "rows": [
+    {
+      "label": "roc_auc",
+      "path": [
+        "primary_split",
+        "overall",
+        "roc_auc"
+      ],
+      "unit": "unitless"
+    },
+    {
+      "label": "brier",
+      "path": [
+        "primary_split",
+        "overall",
+        "brier"
+      ],
+      "unit": "unitless"
+    },
+    {
+      "label": "log_loss",
+      "path": [
+        "primary_split",
+        "overall",
+        "log_loss"
+      ],
+      "unit": "unitless"
+    },
+    {
+      "label": "ece_10",
+      "path": [
+        "primary_split",
+        "overall",
+        "ece_10"
+      ],
+      "unit": "unitless"
+    }
+  ],
+  "table_title": "Selected recorded values (units and context shown)",
+  "evidence_note": "Selected committed results; source values were not independently retrained in this review.",
+  "finding": "The primary holdout reports ROC-AUC 0.8316 and Brier score 0.1447. Gender diagnostics can be calculated, while international, intersectional, and special-needs audits remain unevaluable under the support rules. Repeated splits and bootstrap checks describe uncertainty, but incomplete governance evidence and the historical dataset prevent a deployment or fairness certification."
+}

@@ -1,4 +1,23 @@
-# Responsible AIED Evaluation — UCI 697 Research Bundle
+# Responsible AIED Evaluation — UCI 697
+
+This bundle audits an enrollment-time dropout probability model across discrimination, calibration, subgroup error patterns, allocation behavior, target definitions, and split sensitivity. Protected-group fields remain audit-only, semester-performance variables are removed to respect the prediction-time boundary, and the results are framed as measurement evidence rather than a fairness certificate.
+
+The primary holdout reports ROC-AUC 0.8316 and Brier score 0.1447. Gender diagnostics can be calculated, while international, intersectional, and special-needs audits remain unevaluable under the support rules. Repeated splits and bootstrap checks describe uncertainty, but incomplete governance evidence and the historical dataset prevent a deployment or fairness certification.
+
+## Start here
+
+- [Calculations, evidence and verification scope](CALCULATIONS.md)
+- [Figure sources and exact numerical paths](docs/figure_spec.json)
+- [Working paper](paper/paper.md)
+- [Data and provenance](DATA.md)
+
+![Study question, data, design and interpretation](assets/review_overview.svg)
+
+![Defined calculation and source-linked evidence](assets/review_calculations.svg)
+
+**Review scope:** The existing suite requires unavailable dependencies; no full-suite pass is claimed. The complete data/model experiment was not rerun in this review. Stored empirical results were inspected, not independently reproduced from raw data.
+
+## Detailed project documentation
 
 [![CI](https://github.com/devissaputra/responsible_aied_evaluation/actions/workflows/ci.yml/badge.svg)](https://github.com/devissaputra/responsible_aied_evaluation/actions/workflows/ci.yml)
 [![Empirical Study](https://github.com/devissaputra/responsible_aied_evaluation/actions/workflows/empirical.yml/badge.svg)](https://github.com/devissaputra/responsible_aied_evaluation/actions/workflows/empirical.yml)
@@ -9,7 +28,6 @@ This repository audits an **enrollment-time student-dropout probability model** 
 
 It does **not** turn those measurements into a fairness certificate or deployment recommendation.
 
-![Study architecture](assets/architecture.svg)
 
 ## Research question
 

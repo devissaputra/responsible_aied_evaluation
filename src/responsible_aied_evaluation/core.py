@@ -1,3 +1,7 @@
+# Calculation reading guide: ../CALCULATIONS.md (repository root).
+# Brier = mean((p-y)^2); selection gap = max(group rates)-min(group rates).
+# No recorded dropout includes enrolled and graduated cases; it is not synonymous with success. Group rates need adequate positive and negative support. An unevaluable group must not be represented as having zero disparity.
+
 import math
 import random
 from collections import Counter

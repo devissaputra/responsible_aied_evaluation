@@ -239,3 +239,33 @@ Realinho, V., Machado, J., Baptista, L., & Martins, M. V. (2022). Predicting Stu
 Tabassi, E. (2023). *Artificial Intelligence Risk Management Framework (AI RMF 1.0).* NIST AI 100-1. https://doi.org/10.6028/NIST.AI.100-1
 
 UNESCO. (2021). *Recommendation on the Ethics of Artificial Intelligence.*
+
+
+## Calculation definitions and evidence audit
+
+Brier = mean((p-y)^2); selection gap = max(group rates)-min(group rates).
+
+No recorded dropout includes enrolled and graduated cases; it is not synonymous with success. Group rates need adequate positive and negative support. An unevaluable group must not be represented as having zero disparity.
+
+The primary holdout reports ROC-AUC 0.8316 and Brier score 0.1447. Gender diagnostics can be calculated, while international, intersectional, and special-needs audits remain unevaluable under the support rules. Repeated splits and bootstrap checks describe uncertainty, but incomplete governance evidence and the historical dataset prevent a deployment or fairness certification.
+
+The [calculation guide](../CALCULATIONS.md) provides exact evidence paths and a function-level implementation map.
+
+![Study design](../assets/review_overview.svg)
+
+![Calculation and selected evidence](../assets/review_calculations.svg)
+
+### Selected evidence and interpretation
+
+| Quantity | Value | Unit / meaning | JSON path |
+|---|---:|---|---|
+| roc_auc | 0.8316010873895621 | unitless | `primary_split.overall.roc_auc` |
+| brier | 0.14465658949166413 | unitless | `primary_split.overall.brier` |
+| log_loss | 0.4501032086402171 | unitless | `primary_split.overall.log_loss` |
+| ece_10 | 0.04134547372176672 | unitless | `primary_split.overall.ece_10` |
+
+These values are read from `results/uci697_audit.json`. They must be interpreted with the split, data status and limitations above. The complete data/model experiment was not rerun in this review. Stored empirical results were inspected, not independently reproduced from raw data.
+
+### Reproduction and claim boundaries
+
+The existing suite requires unavailable dependencies; no full-suite pass is claimed. The figure generator can be checked with `python scripts/build_review_figures.py --check`. This verifies the displayed calculation evidence, not an independent replication of the complete scientific experiment. The manuscript is a working report, not a peer-reviewed publication.
